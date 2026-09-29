@@ -1,997 +1,416 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Webhook Studio</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Webhook Sender</title>
 <style>
-*{
-box-sizing:border-box;
-font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
-}
-
-:root{
---bg:#07080d;
---card:rgba(20,22,30,.78);
---line:rgba(255,255,255,.08);
---text:#f5f5f7;
---muted:#9297a5;
---accent:#5865f2;
-}
-
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#07090f;color:#fff}
 body{
-margin:0;
-min-height:100vh;
-padding:20px 14px;
-color:var(--text);
 background:
-radial-gradient(circle at 15% 10%,#5865f233 0,transparent 30%),
-radial-gradient(circle at 90% 85%,#8b5cf633 0,transparent 28%),
-linear-gradient(135deg,#07080d,#10121b 55%,#08090e);
+radial-gradient(circle at 15% 10%,#182b52 0,transparent 32%),
+radial-gradient(circle at 85% 90%,#17183b 0,transparent 30%),
+#07090f;
+padding:18px;
 }
-
-body:before{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-background:linear-gradient(
-120deg,
-transparent 25%,
-rgba(255,255,255,.025) 50%,
-transparent 75%
-);
-background-size:300% 300%;
-animation:shine 10s linear infinite;
-}
-
-@keyframes shine{
-0%{background-position:200% 0}
-100%{background-position:-200% 0}
-}
-
-.container{
-width:100%;
-max-width:560px;
-margin:auto;
-position:relative;
-z-index:1;
-}
-
-.top{
-text-align:center;
-margin:8px 0 22px;
-}
-
-.logo{
-width:64px;
-height:64px;
-border-radius:18px;
-object-fit:cover;
-border:1px solid rgba(255,255,255,.12);
-box-shadow:
-0 0 25px #5865f255,
-0 10px 40px #0008;
-}
-
-h1{
-margin:13px 0 3px;
-font-size:25px;
-font-weight:800;
-letter-spacing:-.5px;
-}
-
-.sub{
-font-size:12px;
-color:var(--muted);
-}
-
+.app{max-width:760px;margin:auto}
 .card{
-position:relative;
-overflow:hidden;
-background:var(--card);
-backdrop-filter:blur(20px);
--webkit-backdrop-filter:blur(20px);
-border:1px solid var(--line);
-border-radius:20px;
-padding:17px;
-box-shadow:
-0 25px 70px #0009,
-inset 0 1px rgba(255,255,255,.035);
+background:rgba(14,17,27,.94);
+border:1px solid #242b3c;
+border-radius:18px;
+padding:18px;
+box-shadow:0 12px 40px rgba(0,0,0,.35);
 }
-
-.card:before{
-content:"";
-position:absolute;
-top:0;
-left:8%;
-right:8%;
-height:1px;
-background:linear-gradient(
-90deg,
-transparent,
-#5865f2,
-#9b87ff,
-transparent
-);
-box-shadow:0 0 15px #5865f2;
-}
-
+h1{font-size:22px;margin:0 0 16px}
 .section{
-margin:19px 0 8px;
-font-size:10px;
-font-weight:800;
-letter-spacing:.12em;
-text-transform:uppercase;
-color:#777d8c;
+border:1px solid #242b3c;
+background:#0c1019;
+border-radius:14px;
+padding:14px;
+margin-top:12px;
 }
-
 label{
 display:block;
 font-size:12px;
-color:#aeb3c0;
-margin:10px 0 6px;
+color:#8993a8;
+margin:0 0 7px;
 }
-
-input,
-textarea{
+input,textarea,select{
 width:100%;
-border:1px solid rgba(255,255,255,.08);
-border-radius:11px;
-outline:none;
-background:rgba(9,10,15,.72);
+border:1px solid #293247;
+background:#090d15;
 color:#fff;
+border-radius:10px;
 padding:11px 12px;
+outline:none;
 font-size:14px;
-transition:.2s;
-}
-
-input:focus,
-textarea:focus{
-border-color:#5865f2;
-box-shadow:
-0 0 0 2px #5865f21c,
-0 0 20px #5865f218;
-}
-
-textarea{
-height:105px;
-resize:vertical;
-}
-
-.row{
-display:flex;
-gap:10px;
-}
-
-.row>div{
-flex:1;
-}
-
-.color{
-display:flex;
-gap:9px;
-}
-
-.color input[type=color]{
-width:54px;
-height:43px;
-padding:4px;
-cursor:pointer;
-}
-
-.hint{
-font-size:10px;
-color:#656a77;
-margin-top:5px;
-}
-
-.toggle{
-display:flex;
-align-items:center;
-gap:9px;
-margin-top:12px;
-font-size:12px;
-color:#aeb3c0;
-}
-
-.toggle input{
-width:16px;
-height:16px;
-accent-color:#5865f2;
-}
-
-.preview-label{
-margin:20px 0 8px;
-font-size:10px;
-font-weight:800;
-letter-spacing:.12em;
-text-transform:uppercase;
-color:#777d8c;
-}
-
-.preview{
-border:1px solid rgba(255,255,255,.07);
-border-left:3px solid #5865f2;
-border-radius:11px;
-padding:12px;
-background:#17191f;
-box-shadow:0 8px 25px #0004;
-}
-
-.user{
-display:flex;
-align-items:center;
-gap:9px;
 margin-bottom:11px;
 }
-
-.avatar{
-width:37px;
-height:37px;
-border-radius:50%;
-object-fit:cover;
-background:#0b0c10;
-}
-
-.name{
+input:focus,textarea:focus{border-color:#4d8dff}
+textarea{min-height:105px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check{
+display:flex;
+align-items:center;
+gap:8px;
 font-size:13px;
-font-weight:750;
+color:#cbd2df;
+margin:4px 0;
 }
-
-.time{
-font-size:10px;
-color:#6f7480;
-margin-left:4px;
-}
-
-.ptitle{
-font-size:16px;
-font-weight:750;
-margin-bottom:6px;
-}
-
-.pdesc{
-font-size:13px;
-line-height:1.45;
-color:#c8cbd1;
-white-space:pre-wrap;
-}
-
-.banner{
-width:100%;
-max-height:230px;
-object-fit:cover;
-border-radius:8px;
-margin-top:11px;
-display:block;
-}
-
-.thumb{
-width:72px;
-height:72px;
-object-fit:cover;
-border-radius:8px;
-float:right;
-margin:0 0 7px 10px;
-}
-
-.clear{
-clear:both;
-}
-
-.pfooter{
-font-size:10px;
-color:#6f7480;
-margin-top:10px;
-}
-
+.check input{width:auto;margin:0}
 button{
+position:relative;
+overflow:hidden;
 width:100%;
 border:0;
 border-radius:11px;
 padding:13px;
-margin-top:14px;
-font-size:14px;
-font-weight:800;
+background:linear-gradient(135deg,#5865f2,#3478ff);
 color:white;
+font-weight:700;
+font-size:14px;
 cursor:pointer;
-background:
-linear-gradient(
-135deg,
-#5865f2,
-#7657f6,
-#8b5cf6
-);
-box-shadow:
-0 8px 25px #5865f244,
-inset 0 1px rgba(255,255,255,.15);
-transition:.18s;
+margin-top:5px;
 }
-
-button:hover{
-transform:translateY(-1px);
-box-shadow:
-0 12px 30px #5865f255,
-inset 0 1px rgba(255,255,255,.18);
+button:active{transform:scale(.985)}
+.ripple{
+position:absolute;
+width:12px;height:12px;
+border-radius:50%;
+background:rgba(255,255,255,.45);
+transform:translate(-50%,-50%);
+pointer-events:none;
+animation:ripple .42s ease-out forwards;
 }
-
-button:active{
-transform:scale(.985);
+@keyframes ripple{
+from{opacity:1;transform:translate(-50%,-50%) scale(1)}
+to{opacity:0;transform:translate(-50%,-50%) scale(15)}
 }
-
-button:disabled{
-opacity:.5;
-cursor:not-allowed;
-transform:none;
-}
-
-.secondary{
-background:rgba(255,255,255,.055);
-box-shadow:none;
-border:1px solid rgba(255,255,255,.07);
-}
-
 .status{
-min-height:17px;
-text-align:center;
 font-size:12px;
-margin-top:11px;
+color:#8f9ab0;
+margin-top:10px;
+text-align:center;
+min-height:16px;
 }
-
-.success{
-color:#57f287;
+.preview-title{
+font-size:12px;
+color:#8993a8;
+margin-bottom:8px;
 }
-
-.error{
-color:#ed4245;
+.profile{
+position:relative;
+overflow:hidden;
+border:1px solid #2a3142;
+border-radius:14px;
+background:#0b0e16;
 }
-
-.note{
-margin-top:13px;
-padding:10px;
-border-radius:10px;
-background:rgba(255,255,255,.025);
-border:1px solid rgba(255,255,255,.055);
-font-size:10px;
-line-height:1.5;
-color:#676d79;
+.banner{
+height:115px;
+background:#1a2030 center/cover no-repeat;
+}
+.profile-body{
+padding:0 14px 14px;
+position:relative;
+}
+.avatar{
+width:68px;
+height:68px;
+border-radius:50%;
+border:4px solid #0b0e16;
+object-fit:cover;
+margin-top:-34px;
+background:#111827;
+}
+.username{
+font-size:15px;
+font-weight:700;
+margin-top:6px;
+}
+.embed{
+margin-top:12px;
+border-left:4px solid #5865f2;
+background:#11151f;
+border-radius:5px;
+padding:12px;
+}
+.embed-title{font-weight:700;font-size:15px;margin-bottom:7px}
+.embed-desc{font-size:13px;color:#c8cfdb;white-space:pre-wrap}
+.embed-media{
+width:100%;
+max-height:240px;
+object-fit:cover;
+border-radius:7px;
+margin-top:10px;
+display:none;
+}
+.thumb{
+float:right;
+width:72px;
+height:72px;
+object-fit:cover;
+border-radius:7px;
+display:none;
+margin-left:10px;
+}
+.footer{
+font-size:11px;
+color:#747f94;
+margin-top:10px;
+}
+.clear{clear:both}
+@media(max-width:520px){
+body{padding:10px}
+.card{padding:12px;border-radius:15px}
+.row{grid-template-columns:1fr}
+.banner{height:95px}
 }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-
-<div class="top">
-
-<img
-class="logo"
-src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=200&q=80"
->
-
-<h1>Webhook Studio</h1>
-<div class="sub">Discord Webhook</div>
-
-</div>
-
+<div class="app">
 <div class="card">
 
-<div class="section">Webhook</div>
+<h1>Webhook Sender</h1>
 
-<label>Webhook URL</label>
-<input
-id="webhook"
-type="text"
-placeholder="https://discord.com/api/webhooks/..."
->
+<div class="section">
+<label>WEBHOOK URL</label>
+<input id="webhook" type="url" placeholder="https://discord.com/api/webhooks/...">
 
-<label>Username</label>
-<input
-id="username"
-type="text"
-value="rexpyth"
-placeholder="Username"
->
+<label>USERNAME</label>
+<input id="username" placeholder="Webhook">
 
-<label>Avatar URL</label>
-<input
-id="avatar"
-type="text"
-value="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80"
-placeholder="Paste avatar URL"
->
+<label>AVATAR URL</label>
+<input id="avatar" type="url" placeholder="https://example.com/avatar.png">
 
-<div class="section">Message</div>
+<label>BANNER URL</label>
+<input id="banner" type="url" placeholder="https://example.com/banner.png">
+</div>
 
-<label>Message</label>
-<textarea
-id="message"
-placeholder="Example"
-></textarea>
+<div class="section">
+<label>EMBED TITLE</label>
+<input id="title" placeholder="Title">
+
+<label>MESSAGE</label>
+<textarea id="message" placeholder="Write your message..."></textarea>
 
 <div class="row">
-
 <div>
-<label>Repeat</label>
-<input
-id="times"
-type="number"
-value="1"
-min="1"
-max="20"
->
+<label>THUMBNAIL URL</label>
+<input id="thumbnail" type="url" placeholder="https://example.com/thumb.png">
 </div>
-
 <div>
-<label>Delay (sec)</label>
-<input
-id="delay"
-type="number"
-value="5"
-min="1"
-max="3600"
-step="1"
->
+<label>EMBED COLOR</label>
+<input id="color" type="color" value="#5865F2">
+</div>
 </div>
 
+<label>FOOTER</label>
+<input id="footer" placeholder="Footer">
+
+<label class="check">
+<input id="timestamp" type="checkbox">
+Timestamp
+</label>
+
+<label class="check">
+<input id="plain" type="checkbox">
+Plain Message
+</label>
 </div>
 
-<div class="section">Embed</div>
-
-<label>Title</label>
-<input
-id="title"
-type="text"
-value="Notification"
-placeholder="Title"
->
-
-<label>Banner</label>
-<input
-id="banner"
-type="text"
-value="https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200&q=85"
-placeholder="Paste banner URL"
->
-
-<label>Thumbnail</label>
-<input
-id="thumbnail"
-type="text"
-placeholder="Paste thumbnail URL"
->
-
-<label>Color</label>
-
-<div class="color">
-<input
-id="color"
-type="color"
-value="#5865F2"
->
-
-<input
-id="colorText"
-type="text"
-value="#5865F2"
-placeholder="#5865F2"
->
-</div>
-
-<label>Footer</label>
-<input
-id="footer"
-type="text"
-value="Webhook Studio"
-placeholder="Footer"
->
-
-<div class="toggle">
-<input
-id="timestamp"
-type="checkbox"
-checked
->
-<span>Timestamp</span>
-</div>
-
-<div class="toggle">
-<input
-id="plain"
-type="checkbox"
->
-<span>Plain message</span>
-</div>
-
-<div class="preview-label">Preview</div>
-
-<div class="preview" id="preview">
-
-<div class="user">
-
-<img
-id="previewAvatar"
-class="avatar"
->
-
+<div class="section">
+<div class="row">
 <div>
-
-<span
-id="previewName"
-class="name"
->rexpyth</span>
-
-<span class="time">now</span>
-
+<label>REPEAT</label>
+<input id="repeat" type="number" value="1" min="1" max="20">
+</div>
+<div>
+<label>DELAY (SECONDS)</label>
+<input id="delay" type="number" value="5" min="1" max="3600">
+</div>
 </div>
 
+<button id="send">SEND WEBHOOK</button>
+<div class="status" id="status"></div>
 </div>
 
-<img
-id="previewThumb"
-class="thumb"
-style="display:none"
->
+<div class="section">
+<div class="preview-title">PREVIEW</div>
 
-<div
-id="previewTitle"
-class="ptitle"
->Notification</div>
+<div class="profile">
+<div class="banner" id="previewBanner"></div>
 
-<div
-id="previewDesc"
-class="pdesc"
->Example</div>
+<div class="profile-body">
+<img class="avatar" id="previewAvatar">
 
-<img
-id="previewBanner"
-class="banner"
->
+<div class="username" id="previewUsername">Webhook</div>
 
+<div class="embed" id="previewEmbed">
+<img class="thumb" id="previewThumb">
+
+<div class="embed-title" id="previewTitle">Title</div>
+<div class="embed-desc" id="previewDesc">Write your message...</div>
+<img class="embed-media" id="previewMedia">
 <div class="clear"></div>
 
-<div
-id="previewFooter"
-class="pfooter"
->Webhook Studio</div>
-
-</div>
-
-<button
-class="secondary"
-onclick="updatePreview()"
->
-Refresh
-</button>
-
-<button
-id="sendBtn"
-onclick="sendWebhook()"
->
-Send
-</button>
-
-<div
-id="status"
-class="status"
-></div>
-
-<div class="note">
-Message dikirim persis seperti yang lu tulis. Tidak ada tambahan nomor, counter, atau teks lain ke dalam message.
+<div class="footer" id="previewFooter"></div>
 </div>
 
 </div>
+</div>
+</div>
 
+</div>
 </div>
 
 <script>
-
 const $=id=>document.getElementById(id);
 
-const DEFAULT_AVATAR=
-"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80";
+const defaults={
+avatar:"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300",
+banner:"https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200"
+};
 
-const DEFAULT_BANNER=
-"https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200&q=85";
+$("previewAvatar").src=defaults.avatar;
+$("previewBanner").style.backgroundImage=`url("${defaults.banner}")`;
 
-function safeUrl(url,fallback=""){
+function update(){
+const avatar=$("avatar").value.trim();
+const banner=$("banner").value.trim();
+const username=$("username").value.trim();
+const title=$("title").value;
+const message=$("message").value;
+const thumb=$("thumbnail").value.trim();
+const footer=$("footer").value;
+const color=$("color").value;
 
-try{
+$("previewAvatar").src=avatar||defaults.avatar;
+$("previewBanner").style.backgroundImage=`url("${banner||defaults.banner}")`;
 
-const u=new URL(url);
+$("previewUsername").textContent=username||"Webhook";
+$("previewTitle").textContent=title||"Title";
+$("previewDesc").textContent=message||"Write your message...";
+$("previewEmbed").style.borderLeftColor=color;
 
-if(
-u.protocol==="http:"||
-u.protocol==="https:"
-){
-return url;
-}
-
-}catch(e){}
-
-return fallback;
-}
-
-function hexToInt(hex){
-return parseInt(hex.replace("#",""),16);
-}
-
-function updatePreview(){
-
-const username=
-$("username").value.trim()||
-"rexpyth";
-
-const avatar=
-safeUrl(
-$("avatar").value.trim(),
-DEFAULT_AVATAR
-);
-
-const title=
-$("title").value.trim()||
-"Notification";
-
-const message=
-$("message").value||
-"Example";
-
-const banner=
-safeUrl(
-$("banner").value.trim(),
-DEFAULT_BANNER
-);
-
-const thumbnail=
-$("thumbnail").value.trim();
-
-const footer=
-$("footer").value.trim()||
-"Webhook Studio";
-
-const color=
-$("color").value;
-
-$("preview").style.borderLeftColor=color;
-
-$("previewAvatar").src=avatar;
-
-$("previewName").textContent=username;
-
-$("previewTitle").textContent=title;
-
-$("previewDesc").textContent=message;
-
-$("previewBanner").src=banner;
-
-$("previewFooter").textContent=footer;
-
-$("colorText").value=color;
-
-if(thumbnail){
-
-const url=safeUrl(thumbnail,"");
-
-if(url){
-
-$("previewThumb").src=url;
-
+if(thumb){
+$("previewThumb").src=thumb;
 $("previewThumb").style.display="block";
-
-}
-
 }else{
-
 $("previewThumb").style.display="none";
-
-}
-
-}
-
-[
-"username",
-"avatar",
-"title",
-"message",
-"banner",
-"thumbnail",
-"footer"
-].forEach(id=>{
-
-$(id).addEventListener(
-"input",
-updatePreview
-);
-
-});
-
-$("color").addEventListener(
-"input",
-()=>{
-
-$("colorText").value=
-$("color").value;
-
-updatePreview();
-
-}
-);
-
-$("colorText").addEventListener(
-"input",
-()=>{
-
-const value=
-$("colorText").value.trim();
-
-if(
-/^#[0-9a-fA-F]{6}$/.test(value)
-){
-
-$("color").value=value;
-
-updatePreview();
-
-}
-
-}
-);
-
-$("plain").addEventListener(
-"change",
-()=>{
-
-const disabled=
-$("plain").checked;
-
-[
-"title",
-"avatar",
-"banner",
-"thumbnail",
-"color",
-"footer",
-"timestamp"
-].forEach(id=>{
-
-$(id).disabled=disabled;
-
-});
-
-updatePreview();
-
-}
-);
-
-function sleep(ms){
-
-return new Promise(
-resolve=>setTimeout(resolve,ms)
-);
-
-}
-
-async function sendWebhook(){
-
-const status=$("status");
-
-const btn=$("sendBtn");
-
-const url=
-$("webhook").value.trim();
-
-const message=
-$("message").value;
-
-if(!url){
-
-status.innerHTML=
-'<span class="error">Webhook URL kosong.</span>';
-
-return;
-
-}
-
-if(
-!/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//i
-.test(url)
-){
-
-status.innerHTML=
-'<span class="error">Webhook URL tidak valid.</span>';
-
-return;
-
-}
-
-if(!message.trim()){
-
-status.innerHTML=
-'<span class="error">Message kosong.</span>';
-
-return;
-
-}
-
-let times=
-parseInt(
-$("times").value,
-10
-)||1;
-
-let delay=
-parseInt(
-$("delay").value,
-10
-)||5;
-
-times=
-Math.min(
-Math.max(times,1),
-20
-);
-
-delay=
-Math.max(
-delay,
-1
-);
-
-const username=
-$("username").value.trim()||
-"rexpyth";
-
-const avatar=
-safeUrl(
-$("avatar").value.trim(),
-""
-);
-
-const title=
-$("title").value.trim();
-
-const banner=
-safeUrl(
-$("banner").value.trim(),
-""
-);
-
-const thumbnail=
-safeUrl(
-$("thumbnail").value.trim(),
-""
-);
-
-const footer=
-$("footer").value.trim();
-
-const timestamp=
-$("timestamp").checked;
-
-const plain=
-$("plain").checked;
-
-btn.disabled=true;
-
-try{
-
-for(
-let i=0;
-i<times;
-i++
-){
-
-const payload={
-username:username
-};
-
-if(avatar){
-
-payload.avatar_url=
-avatar;
-
-}
-
-if(plain){
-
-payload.content=
-message;
-
-}else{
-
-const embed={
-description:message,
-color:hexToInt(
-$("color").value
-)
-};
-
-if(title){
-embed.title=title;
-}
-
-if(banner){
-embed.image={
-url:banner
-};
-}
-
-if(thumbnail){
-embed.thumbnail={
-url:thumbnail
-};
 }
 
 if(footer){
-embed.footer={
-text:footer
+$("previewFooter").textContent=footer;
+}else{
+$("previewFooter").textContent="";
+}
+
+$("previewEmbed").style.display=$("plain").checked?"none":"block";
+}
+
+document.querySelectorAll("input,textarea").forEach(el=>{
+el.addEventListener("input",update);
+el.addEventListener("change",update);
+});
+
+$("plain").addEventListener("change",update);
+
+function sleep(ms){
+return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+$("send").addEventListener("click",async function(e){
+
+const ripple=document.createElement("span");
+ripple.className="ripple";
+
+const rect=this.getBoundingClientRect();
+ripple.style.left=(e.clientX-rect.left)+"px";
+ripple.style.top=(e.clientY-rect.top)+"px";
+
+this.appendChild(ripple);
+setTimeout(()=>ripple.remove(),450);
+
+const webhook=$("webhook").value.trim();
+const username=$("username").value.trim();
+const avatar=$("avatar").value.trim();
+const title=$("title").value;
+const message=$("message").value;
+const thumbnail=$("thumbnail").value.trim();
+const footer=$("footer").value;
+const color=$("color").value;
+const timestamp=$("timestamp").checked;
+const plain=$("plain").checked;
+
+let repeat=parseInt($("repeat").value)||1;
+let delay=parseFloat($("delay").value)||1;
+
+repeat=Math.max(1,Math.min(20,repeat));
+delay=Math.max(1,Math.min(3600,delay));
+
+if(!webhook){
+$("status").textContent="Webhook URL required.";
+return;
+}
+
+if(!message&&!title){
+$("status").textContent="Message or title required.";
+return;
+}
+
+this.disabled=true;
+$("status").textContent="Sending...";
+
+try{
+
+for(let i=0;i<repeat;i++){
+
+const payload={
+username:username||"Webhook"
 };
+
+if(avatar)payload.avatar_url=avatar;
+
+if(plain){
+payload.content=message;
+}else{
+
+const embed={
+title:title||undefined,
+description:message||undefined,
+color:parseInt(color.replace("#",""),16)
+};
+
+if(thumbnail)embed.thumbnail={url:thumbnail};
+if(footer)embed.footer={text:footer};
+if(timestamp)embed.timestamp=new Date().toISOString();
+
+payload.embeds=[embed];
 }
 
-if(timestamp){
-embed.timestamp=
-new Date().toISOString();
-}
-
-payload.embeds=[
-embed
-];
-
-}
-
-const res=
-await fetch(
-url,
-{
+const res=await fetch(webhook,{
 method:"POST",
-headers:{
-"Content-Type":
-"application/json"
-},
-body:
-JSON.stringify(payload)
-}
-);
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(payload)
+});
 
-if(!res.ok){
+if(!res.ok)throw new Error("HTTP "+res.status);
 
-throw new Error(
-"HTTP "+res.status
-);
-
+if(i<repeat-1)await sleep(delay*1000);
 }
 
-status.innerHTML=
-'<span class="success">Sent ✓</span>';
-
-if(i<times-1){
-
-await sleep(
-delay*1000
-);
-
-}
-
-}
-
+$("status").textContent="Sent successfully.";
 }catch(err){
-
-status.innerHTML=
-'<span class="error">'+
-err.message+
-'</span>';
-
+$("status").textContent="Failed: "+err.message;
 }
 
-btn.disabled=false;
+this.disabled=false;
+});
 
-}
-
-updatePreview();
-
+update();
 </script>
 
 </body>

@@ -22,9 +22,9 @@ textarea{min-height:105px;resize:vertical}
 button{position:relative;overflow:hidden;width:100%;border:0;border-radius:11px;padding:13px;background:linear-gradient(135deg,#5865f2,#3478ff);color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-top:5px}
 button:active{transform:scale(.985)}
 .smallbtn{padding:10px;background:#151b29;border:1px solid #293247}
-.configbtn{margin-bottom:0}
-.delete,.edit{width:auto;padding:7px 10px;background:#171b25;border:1px solid #303849}
+.delete,.edit,.stop{width:auto;padding:7px 10px;background:#171b25;border:1px solid #303849}
 .edit{background:#18233a;border-color:#304a78}
+.stop{background:#27151b;border-color:#56303a}
 .ripple{position:absolute;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.45);transform:translate(-50%,-50%);pointer-events:none;animation:ripple .42s ease-out forwards}
 @keyframes ripple{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(15)}}
 .status{font-size:12px;color:#8f9ab0;margin-top:10px;text-align:center;min-height:16px}
@@ -54,6 +54,7 @@ button:active{transform:scale(.985)}
 .savebuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cancel{background:#151b29;border:1px solid #293247}
 .confirmtext{font-size:14px;color:#aeb7c8;margin-bottom:15px}
+.autoStatus{font-size:12px;color:#7f8aa0;text-align:center;margin-top:9px;min-height:16px}
 @media(max-width:520px){
 body{padding:10px}
 .card{padding:12px;border-radius:15px}
@@ -70,7 +71,8 @@ body{padding:10px}
 <h1>Webhook Sender</h1>
 
 <div class="section">
-<button class="smallbtn configbtn" id="openConfig">CONFIG</button>
+<button class="smallbtn" id="openConfig">CONFIG</button>
+<button class="smallbtn" id="openAutomation">AUTOMATION SENDER</button>
 </div>
 
 <div class="section">
@@ -179,19 +181,39 @@ Plain Message
 </div>
 </div>
 
-<div class="modal" id="saveModal">
+<div class="modal" id="editModal">
 <div class="modalbox">
 
 <div class="modalhead">
-<strong id="saveTitle">Config Name</strong>
-<button class="close" id="closeSave">×</button>
+<strong>Edit Config</strong>
+<button class="close" id="closeEdit">×</button>
+</div>
+
+<div class="confirmtext">
+Edit the settings saved in this config.
+</div>
+
+<div class="savebuttons">
+<button id="saveEdit">SAVE</button>
+<button id="cancelEdit" class="cancel">CANCEL</button>
+</div>
+
+</div>
+</div>
+
+<div class="modal" id="newModal">
+<div class="modalbox">
+
+<div class="modalhead">
+<strong>Config Name</strong>
+<button class="close" id="closeNew">×</button>
 </div>
 
 <input id="configName" placeholder="Config Name">
 
 <div class="savebuttons">
-<button id="saveConfig">SAVE</button>
-<button id="cancelSave" class="cancel">CANCEL</button>
+<button id="saveNew">SAVE</button>
+<button id="cancelNew" class="cancel">CANCEL</button>
 </div>
 
 </div>
@@ -216,6 +238,30 @@ Cancel without saving your changes?
 </div>
 </div>
 
+<div class="modal" id="automationModal">
+<div class="modalbox">
+
+<div class="modalhead">
+<strong>Automation Sender</strong>
+<button class="close" id="closeAutomation">×</button>
+</div>
+
+<label>INTERVAL (SECONDS)</label>
+<input id="autoInterval" type="number" min="1" max="3600" value="10">
+
+<label>MAX SENDS</label>
+<input id="autoCount" type="number" min="1" max="20" value="5">
+
+<div class="savebuttons">
+<button id="startAutomation">START</button>
+<button id="stopAutomation" class="stop">STOP</button>
+</div>
+
+<div class="autoStatus" id="autoStatus"></div>
+
+</div>
+</div>
+
 <script>
 const $=id=>document.getElementById(id);
 
@@ -232,6 +278,7 @@ const fields=[
 let configs=JSON.parse(localStorage.getItem("webhook_configs")||"{}");
 let editingConfig=null;
 let beforeEdit=null;
+let automationRunning=false;
 
 $("previewAvatar").src=defaults.avatar;
 $("previewBanner").style.backgroundImage=`url("${defaults.banner}")`;
@@ -338,11 +385,8 @@ beforeEdit=JSON.parse(JSON.stringify(configs[name]));
 
 setData(configs[name]);
 
-$("configName").value=name;
-$("saveTitle").textContent="Edit Config";
-
 closeModal("configModal");
-openModal("saveModal");
+openModal("editModal");
 };
 
 const del=document.createElement("button");
@@ -380,21 +424,16 @@ renderConfigs(e.target.value);
 
 $("newConfig").onclick=()=>{
 editingConfig=null;
-beforeEdit=getData();
-
 $("configName").value="";
-$("saveTitle").textContent="Config Name";
-
 closeModal("configModal");
-openModal("saveModal");
+openModal("newModal");
 };
 
-$("closeSave").onclick=()=>{
-closeModal("saveModal");
+$("closeNew").onclick=()=>{
+closeModal("newModal");
 };
 
-$("saveConfig").onclick=()=>{
-
+$("saveNew").onclick=()=>{
 const name=$("configName").value.trim();
 
 if(!name){
@@ -402,34 +441,45 @@ $("configName").focus();
 return;
 }
 
-if(editingConfig){
-
-if(name!==editingConfig){
-delete configs[editingConfig];
+if(configs[name]){
+$("configName").focus();
+return;
 }
 
 configs[name]=getData();
-editingConfig=name;
+localStorage.setItem("webhook_configs",JSON.stringify(configs));
 
-}else{
+closeModal("newModal");
+renderConfigs();
+openModal("configModal");
+};
 
-configs[name]=getData();
-editingConfig=name;
+$("cancelNew").onclick=()=>{
+closeModal("newModal");
+openModal("confirmModal");
+};
 
-}
+$("closeEdit").onclick=()=>{
+closeModal("editModal");
+};
+
+$("saveEdit").onclick=()=>{
+if(!editingConfig)return;
+
+configs[editingConfig]=getData();
 
 localStorage.setItem("webhook_configs",JSON.stringify(configs));
 
-beforeEdit=JSON.parse(JSON.stringify(configs[name]));
+beforeEdit=JSON.parse(JSON.stringify(configs[editingConfig]));
 
-closeModal("saveModal");
+closeModal("editModal");
 
 renderConfigs();
 openModal("configModal");
 };
 
-$("cancelSave").onclick=()=>{
-closeModal("saveModal");
+$("cancelEdit").onclick=()=>{
+closeModal("editModal");
 openModal("confirmModal");
 };
 
@@ -445,24 +495,19 @@ openModal("configModal");
 
 $("confirmNo").onclick=()=>{
 closeModal("confirmModal");
-openModal("saveModal");
+
+if(editingConfig){
+openModal("editModal");
+}else{
+openModal("newModal");
+}
 };
 
 function sleep(ms){
 return new Promise(resolve=>setTimeout(resolve,ms));
 }
 
-$("send").onclick=async function(e){
-
-const ripple=document.createElement("span");
-ripple.className="ripple";
-
-const rect=this.getBoundingClientRect();
-ripple.style.left=(e.clientX-rect.left)+"px";
-ripple.style.top=(e.clientY-rect.top)+"px";
-
-this.appendChild(ripple);
-setTimeout(()=>ripple.remove(),450);
+async function sendOnce(){
 
 const webhook=$("webhook").value.trim();
 const username=$("username").value.trim();
@@ -475,28 +520,8 @@ const color=$("color").value;
 const timestamp=$("timestamp").checked;
 const plain=$("plain").checked;
 
-let repeat=parseInt($("repeat").value)||1;
-let delay=parseFloat($("delay").value)||1;
-
-repeat=Math.max(1,Math.min(20,repeat));
-delay=Math.max(1,Math.min(3600,delay));
-
-if(!webhook){
-$("status").textContent="Webhook URL required.";
-return;
-}
-
-if(!message&&!title){
-$("status").textContent="Message or title required.";
-return;
-}
-
-this.disabled=true;
-$("status").textContent="Sending...";
-
-try{
-
-for(let i=0;i<repeat;i++){
+if(!webhook)throw new Error("Webhook URL required.");
+if(!message&&!title)throw new Error("Message or title required.");
 
 const payload={
 username:username||"Webhook"
@@ -531,8 +556,37 @@ body:JSON.stringify(payload)
 });
 
 if(!res.ok)throw new Error("HTTP "+res.status);
+}
+
+$("send").onclick=async function(e){
+
+const ripple=document.createElement("span");
+ripple.className="ripple";
+
+const rect=this.getBoundingClientRect();
+ripple.style.left=(e.clientX-rect.left)+"px";
+ripple.style.top=(e.clientY-rect.top)+"px";
+
+this.appendChild(ripple);
+setTimeout(()=>ripple.remove(),450);
+
+let repeat=parseInt($("repeat").value)||1;
+let delay=parseFloat($("delay").value)||1;
+
+repeat=Math.max(1,Math.min(20,repeat));
+delay=Math.max(1,Math.min(3600,delay));
+
+this.disabled=true;
+$("status").textContent="Sending...";
+
+try{
+
+for(let i=0;i<repeat;i++){
+
+await sendOnce();
 
 if(i<repeat-1)await sleep(delay*1000);
+
 }
 
 $("status").textContent="Sent successfully.";
@@ -544,6 +598,64 @@ $("status").textContent="Failed: "+err.message;
 }
 
 this.disabled=false;
+};
+
+$("openAutomation").onclick=()=>{
+$("autoStatus").textContent="";
+openModal("automationModal");
+};
+
+$("closeAutomation").onclick=()=>{
+closeModal("automationModal");
+};
+
+$("stopAutomation").onclick=()=>{
+automationRunning=false;
+$("autoStatus").textContent="Automation stopped.";
+};
+
+$("startAutomation").onclick=async()=>{
+
+if(automationRunning)return;
+
+let interval=parseFloat($("autoInterval").value)||10;
+let count=parseInt($("autoCount").value)||5;
+
+interval=Math.max(1,Math.min(3600,interval));
+count=Math.max(1,Math.min(20,count));
+
+try{
+
+await sendOnce();
+
+automationRunning=true;
+$("autoStatus").textContent="Running...";
+
+for(let i=1;i<count&&automationRunning;i++){
+
+await sleep(interval*1000);
+
+if(!automationRunning)break;
+
+await sendOnce();
+
+$("autoStatus").textContent=
+"Sent "+(i+1)+"/"+count;
+
+}
+
+if(automationRunning){
+$("autoStatus").textContent="Automation finished.";
+}
+
+}catch(err){
+
+automationRunning=false;
+$("autoStatus").textContent="Failed: "+err.message;
+
+}
+
+automationRunning=false;
 };
 
 update();

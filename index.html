@@ -1,0 +1,141 @@
+<!DOCTYPE html>  
+<html lang="id">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Discord Webhook Sender</title>  
+  <style>  
+    * { box-sizing: border-box; font-family: system-ui, sans-serif; }  
+    body { background: #1e1f22; color: #dbdee1; margin: 0; padding: 16px; }  
+    .container { max-width: 480px; margin: 0 auto; }  
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }  
+    .credit { font-size: 0.8rem; color: #949ba4; margin-bottom: 20px; }  
+    label { display: block; margin: 12px 0 4px; font-size: 0.9rem; }  
+    input, textarea, select {  
+      width: 100%; padding: 10px; border-radius: 6px;  
+      border: 1px solid #3f4147; background: #2b2d31; color: #dbdee1;  
+    }  
+    textarea { height: 100px; resize: vertical; }  
+    .row { display: flex; gap: 10px; }  
+    .row > div { flex: 1; }  
+    .checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }  
+    button {  
+      width: 100%; padding: 12px; margin-top: 16px;  
+      background: #5865f2; color: white; border: none;  
+      border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer;  
+    }  
+    button:disabled { background: #3f4147; }  
+    .status { margin-top: 12px; font-size: 0.9rem; text-align: center; }  
+    .success { color: #57f287; }  
+    .error { color: #ed4245; }  
+  </style>  
+</head>  
+<body>  
+  <div class="container">  
+    <h1>Discord Webhook Sender</h1>  
+    <div class="credit">by rexpyth</div>  
+  
+    <label>Webhook URL</label>  
+    <input type="text" id="webhook" placeholder="https://discord.com/api/webhooks/...">  
+  
+    <label>Pesan</label>  
+    <textarea id="message" placeholder="Tulis pesan di sini..."></textarea>  
+  
+    <div class="row">  
+      <div>  
+        <label>Ulangi Berapa Kali</label>  
+        <input type="number" id="times" value="5" min="1" max="20">  
+      </div>  
+      <div>  
+        <label>Delay (detik)</label>  
+        <input type="number" id="delay" value="30" min="1">  
+      </div>  
+    </div>  
+  
+    <div class="checkbox">  
+      <input type="checkbox" id="useEmbed">  
+      <label for="useEmbed" style="margin:0">Kirim sebagai Embed</label>  
+    </div>  
+  
+    <div class="checkbox">  
+      <input type="checkbox" id="useUsername">  
+      <label for="useUsername" style="margin:0">Custom Username</label>  
+    </div>  
+  
+    <div id="usernameBox" style="display:none">  
+      <label>Username</label>  
+      <input type="text" id="username" value="rexpyth">  
+    </div>  
+  
+    <button id="sendBtn" onclick="startSend()">Kirim Pesan</button>  
+    <div class="status" id="status"></div>  
+  </div>  
+  
+  <script>  
+    const useUsername = document.getElementById("useUsername");  
+    const usernameBox = document.getElementById("usernameBox");  
+    useUsername.addEventListener("change", () => {  
+      usernameBox.style.display = useUsername.checked ? "block" : "none";  
+    });  
+  
+    async function sendOnce(content, isEmbed, username) {  
+      const url = document.getElementById("webhook").value.trim();  
+      if (!url) throw new Error("Webhook URL kosong");  
+  
+      let payload = { username: username || "rexpyth" };  
+  
+      if (isEmbed) {  
+        payload.embeds = [{  
+          title: "Notification",  
+          description: content,  
+          color: 0x5865F2,  
+          footer: { text: "rexpyth • " + new Date().toLocaleString() }  
+        }];  
+      } else {  
+        payload.content = content;  
+      }  
+  
+      const res = await fetch(url, {  
+        method: "POST",  
+        headers: { "Content-Type": "application/json" },  
+        body: JSON.stringify(payload)  
+      });  
+  
+      if (!res.ok) throw new Error("Gagal kirim (" + res.status + ")");  
+    }  
+  
+    async function startSend() {  
+      const btn = document.getElementById("sendBtn");  
+      const status = document.getElementById("status");  
+      const message = document.getElementById("message").value.trim();  
+      const times = parseInt(document.getElementById("times").value) || 1;  
+      const delay = parseInt(document.getElementById("delay").value) || 30;  
+      const isEmbed = document.getElementById("useEmbed").checked;  
+      const username = document.getElementById("useUsername").checked  
+        ? document.getElementById("username").value  
+        : "rexpyth";  
+  
+      if (!message) {  
+        status.innerHTML = '<span class="error">Pesan tidak boleh kosong</span>';  
+        return;  
+      }  
+  
+      btn.disabled = true;  
+      status.innerHTML = "Mengirim...";  
+  
+      try {  
+        for (let i = 1; i <= times; i++) {  
+          await sendOnce(`${message} | ${i}/${times}`, isEmbed, username);  
+          status.innerHTML = `Terkirim ${i}/${times}`;  
+          if (i < times) await new Promise(r => setTimeout(r, delay * 1000));  
+        }  
+        status.innerHTML = '<span class="success">Selesai dikirim!</span>';  
+      } catch (err) {  
+        status.innerHTML = `<span class="error">${err.message}</span>`;  
+      }  
+  
+      btn.disabled = false;  
+    }  
+  </script>  
+</body>  
+</html>  

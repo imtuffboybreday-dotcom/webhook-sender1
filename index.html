@@ -2,664 +2,1573 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Webhook Sender</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>WebhookSendV2.0</title>
 <style>
+:root{
+  --accent:#5865f2;
+  --accent2:#8b5cf6;
+  --bg:#07090f;
+  --panel:rgba(13,16,27,.88);
+  --panel2:rgba(18,22,36,.92);
+  --border:rgba(255,255,255,.09);
+  --text:#f5f7ff;
+  --muted:#9299ad;
+  --danger:#ed4245;
+  --success:#3ba55c;
+  --radius:14px;
+}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#07090f;color:#fff}
-body{background:radial-gradient(circle at 15% 10%,#182b52 0,transparent 32%),radial-gradient(circle at 85% 90%,#17183b 0,transparent 30%),#07090f;padding:18px}
-.app{max-width:760px;margin:auto}
-.card{background:rgba(14,17,27,.94);border:1px solid #242b3c;border-radius:18px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
-h1{font-size:22px;margin:0 0 16px}
-.section{border:1px solid #242b3c;background:#0c1019;border-radius:14px;padding:14px;margin-top:12px}
-label{display:block;font-size:12px;color:#8993a8;margin:0 0 7px}
-input,textarea{width:100%;border:1px solid #293247;background:#090d15;color:#fff;border-radius:10px;padding:11px 12px;outline:none;font-size:14px;margin-bottom:11px}
-input:focus,textarea:focus{border-color:#4d8dff}
-textarea{min-height:105px;resize:vertical}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.check{display:flex;align-items:center;gap:8px;font-size:13px;color:#cbd2df;margin:4px 0}
-.check input{width:auto;margin:0}
-button{position:relative;overflow:hidden;width:100%;border:0;border-radius:11px;padding:13px;background:linear-gradient(135deg,#5865f2,#3478ff);color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-top:5px}
-button:active{transform:scale(.985)}
-.smallbtn{padding:10px;background:#151b29;border:1px solid #293247}
-.delete,.edit,.stop{width:auto;padding:7px 10px;background:#171b25;border:1px solid #303849}
-.edit{background:#18233a;border-color:#304a78}
-.stop{background:#27151b;border-color:#56303a}
-.ripple{position:absolute;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.45);transform:translate(-50%,-50%);pointer-events:none;animation:ripple .42s ease-out forwards}
-@keyframes ripple{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(15)}}
-.status{font-size:12px;color:#8f9ab0;margin-top:10px;text-align:center;min-height:16px}
-.preview-title{font-size:12px;color:#8993a8;margin-bottom:8px}
-.profile{position:relative;overflow:hidden;border:1px solid #2a3142;border-radius:14px;background:#0b0e16}
-.banner{height:115px;background:#1a2030 center/cover no-repeat}
-.profile-body{padding:0 14px 14px;position:relative}
-.avatar{width:68px;height:68px;border-radius:50%;border:4px solid #0b0e16;object-fit:cover;margin-top:-34px;background:#111827}
-.username{font-size:15px;font-weight:700;margin-top:6px}
-.embed{margin-top:12px;border-left:4px solid #5865f2;background:#11151f;border-radius:5px;padding:12px}
-.embed-title{font-weight:700;font-size:15px;margin-bottom:7px}
-.embed-desc{font-size:13px;color:#c8cfdb;white-space:pre-wrap}
-.thumb{float:right;width:72px;height:72px;object-fit:cover;border-radius:7px;display:none;margin-left:10px}
-.footer{font-size:11px;color:#747f94;margin-top:10px}
-.clear{clear:both}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:15px;z-index:20}
-.modal.show{display:flex}
-.modalbox{width:100%;max-width:430px;background:#0d111b;border:1px solid #293247;border-radius:16px;padding:16px;box-shadow:0 20px 70px rgba(0,0,0,.6)}
-.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.modalhead strong{font-size:17px}
-.close{width:auto;margin:0;padding:7px 11px;background:#151b29;border:1px solid #293247}
-.search{margin-bottom:10px}
-.configlist{max-height:55vh;overflow:auto}
-.configitem{display:flex;align-items:center;gap:7px;background:#101622;border:1px solid #242d40;border-radius:10px;padding:10px;margin-bottom:8px}
-.configname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;flex:1}
-.empty{font-size:12px;color:#69748a;text-align:center;padding:20px}
-.savebuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.cancel{background:#151b29;border:1px solid #293247}
-.confirmtext{font-size:14px;color:#aeb7c8;margin-bottom:15px}
-.autoStatus{font-size:12px;color:#7f8aa0;text-align:center;margin-top:9px;min-height:16px}
-@media(max-width:520px){
-body{padding:10px}
-.card{padding:12px;border-radius:15px}
-.row{grid-template-columns:1fr}
-.banner{height:95px}
+html,body{margin:0;padding:0;min-height:100%;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(88,101,242,.13),transparent 35%),
+    radial-gradient(circle at 85% 85%,rgba(139,92,246,.10),transparent 35%),
+    #07090f;
+}
+body.no-gradient{
+  background:#07090f;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{
+  width:min(1180px,100%);
+  margin:auto;
+  padding:18px;
+}
+.topbar{
+  position:sticky;
+  top:10px;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+  padding:13px;
+  border:1px solid var(--border);
+  background:rgba(9,12,21,.88);
+  backdrop-filter:blur(18px);
+  border-radius:16px;
+  box-shadow:0 14px 50px rgba(0,0,0,.28);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0;
+}
+.logo{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 8px 28px color-mix(in srgb,var(--accent) 30%,transparent);
+  font-weight:900;
+}
+.brand h1{
+  margin:0;
+  font-size:17px;
+  letter-spacing:.2px;
+}
+.brand span{
+  display:block;
+  margin-top:2px;
+  font-size:11px;
+  color:var(--muted);
+}
+.top-actions{
+  display:flex;
+  gap:8px;
+}
+.iconbtn,.topbtn,.btn{
+  border:1px solid var(--border);
+  color:var(--text);
+  background:rgba(255,255,255,.045);
+  transition:.16s ease;
+}
+.iconbtn:hover,.topbtn:hover,.btn:hover{
+  transform:translateY(-1px);
+  border-color:color-mix(in srgb,var(--accent) 50%,var(--border));
+  background:rgba(255,255,255,.075);
+}
+.iconbtn{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  font-size:18px;
+}
+.topbtn,.btn{
+  min-height:40px;
+  padding:0 14px;
+  border-radius:11px;
+  font-weight:750;
+}
+.btn.primary{
+  border-color:transparent;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 8px 25px color-mix(in srgb,var(--accent) 25%,transparent);
+}
+.btn.success{background:rgba(59,165,92,.14);border-color:rgba(59,165,92,.35)}
+.btn.danger{background:rgba(237,66,69,.12);border-color:rgba(237,66,69,.3)}
+.btn.small{min-height:34px;padding:0 11px;font-size:12px}
+.main-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(320px,.7fr);
+  gap:16px;
+}
+.card{
+  border:1px solid var(--border);
+  background:var(--panel);
+  backdrop-filter:blur(16px);
+  border-radius:var(--radius);
+  box-shadow:0 18px 55px rgba(0,0,0,.2);
+}
+.section{
+  padding:16px;
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+.section:last-child{border-bottom:0}
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.section-title h2{
+  margin:0;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.label{
+  display:block;
+  margin:0 0 7px;
+  font-size:11px;
+  color:#b8bfd1;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.65px;
+}
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+input,textarea,select{
+  width:100%;
+  border:1px solid var(--border);
+  outline:none;
+  color:var(--text);
+  background:rgba(4,7,13,.74);
+  border-radius:10px;
+  padding:11px 12px;
+  transition:.16s ease;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:color-mix(in srgb,var(--accent) 75%,white 5%);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent);
+}
+textarea{
+  resize:vertical;
+  min-height:118px;
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.row3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+.color-wrap{
+  display:flex;
+  gap:9px;
+}
+input[type=color]{
+  width:52px;
+  min-width:52px;
+  padding:4px;
+  height:42px;
+}
+.toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:rgba(255,255,255,.025);
+  margin-bottom:9px;
+}
+.toggle-info strong{
+  display:block;
+  font-size:13px;
+}
+.toggle-info small{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:2px;
+}
+.switch{
+  position:relative;
+  width:49px;
+  height:28px;
+  flex:none;
+}
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+.slider{
+  position:absolute;
+  inset:0;
+  border-radius:99px;
+  background:#252b39;
+  transition:.2s;
+}
+.slider:before{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  top:3px;
+  left:3px;
+  background:white;
+  border-radius:50%;
+  transition:.2s;
+}
+.switch input:checked + .slider{
+  background:var(--accent);
+}
+.switch input:checked + .slider:before{
+  transform:translateX(21px);
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+}
+.status{
+  min-height:18px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:11px;
+  word-break:break-word;
+}
+.preview-wrap{padding:16px}
+.preview-title{
+  margin:0 0 11px;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.discord-preview{
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:15px;
+  background:#0c0f16;
+}
+.profile-banner{
+  position:relative;
+  height:112px;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--accent) 72%,#05070b),
+      color-mix(in srgb,var(--accent2) 62%,#05070b));
+}
+.profile-banner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
+}
+.profile-body{
+  position:relative;
+  padding:0 14px 15px;
+}
+.avatar-box{
+  width:72px;
+  height:72px;
+  margin-top:-36px;
+  position:relative;
+  z-index:2;
+}
+.avatar-box img,.avatar-fallback{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  border:5px solid #0c0f16;
+  object-fit:cover;
+  background:#111725;
+}
+.avatar-fallback{
+  display:grid;
+  place-items:center;
+  font-size:27px;
+  font-weight:900;
+}
+.preview-name{
+  margin-top:9px;
+  font-size:16px;
+  font-weight:850;
+}
+.preview-handle{
+  font-size:11px;
+  color:#8d95aa;
+  margin-top:2px;
+}
+.embed-card{
+  margin-top:14px;
+  padding:12px;
+  border-left:4px solid var(--accent);
+  background:#11151e;
+  border-radius:8px;
+}
+.embed-title{
+  font-size:14px;
+  font-weight:850;
+  margin-bottom:6px;
+}
+.embed-desc{
+  font-size:12px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.embed-thumb{
+  width:74px;
+  height:74px;
+  object-fit:cover;
+  float:right;
+  margin-left:9px;
+  border-radius:7px;
+  display:none;
+}
+.embed-footer{
+  clear:both;
+  padding-top:9px;
+  margin-top:8px;
+  border-top:1px solid rgba(255,255,255,.06);
+  color:#777f94;
+  font-size:10px;
+}
+.plain-preview{
+  margin-top:14px;
+  padding:12px;
+  background:#11151e;
+  border-radius:8px;
+  font-size:12px;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.empty-preview{
+  color:#737c90;
+  font-size:12px;
+}
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(8px);
+}
+.modal{
+  width:min(720px,100%);
+  max-height:92vh;
+  overflow:auto;
+  border:1px solid var(--border);
+  background:rgba(10,13,22,.97);
+  border-radius:17px;
+  box-shadow:0 30px 100px rgba(0,0,0,.5);
+}
+.modal-head{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(10,13,22,.94);
+  backdrop-filter:blur(15px);
+}
+.modal-head h3{
+  margin:0;
+  font-size:15px;
+}
+.modal-body{padding:16px}
+.modal-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  padding:13px 16px;
+  border-top:1px solid var(--border);
+}
+.config-top{
+  display:flex;
+  gap:9px;
+  margin-bottom:12px;
+}
+.config-top input{flex:1}
+.config-list{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.config-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:rgba(255,255,255,.025);
+}
+.config-name{
+  min-width:0;
+  font-size:13px;
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.config-actions{
+  display:flex;
+  gap:6px;
+  flex:none;
+}
+.config-actions button{
+  min-height:31px;
+  padding:0 9px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  font-size:10px;
+  font-weight:800;
+}
+.config-actions .delete{
+  color:#ff8d8f;
+}
+.color-presets{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+}
+.color-preset{
+  height:35px;
+  border-radius:9px;
+  border:2px solid transparent;
+}
+.color-preset.active{
+  border-color:#fff;
+}
+.setting-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+.setting-row:last-child{border-bottom:0}
+.setting-row strong{font-size:13px}
+.setting-row small{
+  display:block;
+  color:var(--muted);
+  margin-top:3px;
+  font-size:10px;
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translate(-50%,20px);
+  opacity:0;
+  z-index:300;
+  max-width:min(92vw,460px);
+  padding:11px 14px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:rgba(14,18,28,.96);
+  color:var(--text);
+  font-size:12px;
+  box-shadow:0 16px 50px rgba(0,0,0,.4);
+  transition:.22s ease;
+  text-align:center;
+}
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+.ripple{
+  position:absolute;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:rgba(255,255,255,.28);
+  transform:translate(-50%,-50%) scale(0);
+  pointer-events:none;
+  animation:ripple .48s ease-out forwards;
+}
+.ripple-btn{position:relative;overflow:hidden}
+@keyframes ripple{
+  to{transform:translate(-50%,-50%) scale(12);opacity:0}
+}
+.hidden{display:none!important}
+@media(max-width:860px){
+  .main-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .app{padding:10px}
+  .topbar{top:5px}
+  .row,.row3{grid-template-columns:1fr}
+  .color-presets{grid-template-columns:repeat(3,1fr)}
+  .config-item{align-items:flex-start;flex-direction:column}
+  .config-actions{width:100%}
+  .config-actions button{flex:1}
 }
 </style>
 </head>
 <body>
-
 <div class="app">
-<div class="card">
 
-<h1>Webhook Sender</h1>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <h1>Webhook Sender</h1>
+        <span>Premium webhook dashboard</span>
+      </div>
+    </div>
 
-<div class="section">
-<button class="smallbtn" id="openConfig">CONFIG</button>
-<button class="smallbtn" id="openAutomation">AUTOMATION SENDER</button>
+    <div class="top-actions">
+      <button class="iconbtn ripple-btn" id="configBtn" title="Configs">☷</button>
+      <button class="iconbtn ripple-btn" id="automationBtn" title="Automation">⟳</button>
+      <button class="iconbtn ripple-btn" id="settingsBtn" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <div class="main-grid">
+
+    <main class="card">
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Webhook</h2>
+        </div>
+
+        <div class="field">
+          <label class="label">Webhook URL</label>
+          <input id="webhook" type="url" placeholder="https://discord.com/api/webhooks/...">
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label class="label">Username</label>
+            <input id="username" type="text" placeholder="Webhook">
+          </div>
+
+          <div class="field">
+            <label class="label">Avatar URL</label>
+            <input id="avatar" type="url" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Banner URL</label>
+          <input id="banner" type="url" placeholder="https://...">
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Embed</h2>
+        </div>
+
+        <div class="field">
+          <label class="label">Embed Title</label>
+          <input id="title" type="text" placeholder="Title">
+        </div>
+
+        <div class="field">
+          <label class="label">Description / Message</label>
+          <textarea id="message" placeholder="Type your message..."></textarea>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label class="label">Thumbnail URL</label>
+            <input id="thumbnail" type="url" placeholder="https://...">
+          </div>
+
+          <div class="field">
+            <label class="label">Footer</label>
+            <input id="footer" type="text" placeholder="Footer">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Embed Color</label>
+          <div class="color-wrap">
+            <input id="color" type="color" value="#5865F2">
+            <input id="colorText" type="text" value="#5865F2" maxlength="7">
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <strong>Timestamp</strong>
+            <small>Add Discord timestamp to embed</small>
+          </div>
+          <label class="switch">
+            <input id="timestamp" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <strong>Plain Message</strong>
+            <small>Send message without an embed</small>
+          </div>
+          <label class="switch">
+            <input id="plain" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Send</h2>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary ripple-btn" id="sendBtn">SEND WEBHOOK</button>
+          <button class="btn ripple-btn" id="clearBtn">CLEAR</button>
+        </div>
+
+        <div class="status" id="status"></div>
+      </section>
+
+    </main>
+
+    <aside class="card">
+      <div class="preview-wrap">
+        <h2 class="preview-title">Live Preview</h2>
+
+        <div class="discord-preview">
+
+          <div class="profile-banner" id="profileBanner">
+            <img id="bannerImg" alt="">
+          </div>
+
+          <div class="profile-body">
+            <div class="avatar-box">
+              <img id="avatarImg" alt="" class="hidden">
+              <div id="avatarFallback" class="avatar-fallback">W</div>
+            </div>
+
+            <div class="preview-name" id="previewName">Webhook</div>
+            <div class="preview-handle">@webhook</div>
+
+            <div id="embedPreview" class="embed-card">
+              <img id="thumbImg" class="embed-thumb" alt="">
+              <div class="embed-title" id="previewTitle">Embed Title</div>
+              <div class="embed-desc" id="previewMessage">Your message will appear here.</div>
+              <div class="embed-footer" id="previewFooter">Footer</div>
+            </div>
+
+            <div id="plainPreview" class="plain-preview hidden"></div>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+  </div>
 </div>
 
-<div class="section">
-<label>WEBHOOK URL</label>
-<input id="webhook" type="url" placeholder="https://discord.com/api/webhooks/...">
+<!-- CONFIG LIST -->
+<div class="modal-backdrop" id="configModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>CONFIGS</h3>
+      <button class="iconbtn ripple-btn closeModal" data-close="configModal">×</button>
+    </div>
 
-<label>USERNAME</label>
-<input id="username" placeholder="Webhook">
+    <div class="modal-body">
+      <div class="config-top">
+        <input id="configSearch" type="text" placeholder="Search configs...">
+        <button class="btn primary ripple-btn" id="newConfigBtn">NEW</button>
+      </div>
 
-<label>AVATAR URL</label>
-<input id="avatar" type="url" placeholder="https://example.com/avatar.png">
-
-<label>BANNER URL</label>
-<input id="banner" type="url" placeholder="https://example.com/banner.png">
+      <div class="config-list" id="configList"></div>
+    </div>
+  </div>
 </div>
 
-<div class="section">
-<label>EMBED TITLE</label>
-<input id="title" placeholder="Title">
+<!-- CONFIG EDITOR -->
+<div class="modal-backdrop" id="configEditorModal">
+  <div class="modal">
 
-<label>MESSAGE</label>
-<textarea id="message" placeholder="Write your message..."></textarea>
+    <div class="modal-head">
+      <h3 id="editorTitle">NEW CONFIG</h3>
+      <button class="iconbtn ripple-btn closeModal" data-close="configEditorModal">×</button>
+    </div>
 
-<div class="row">
-<div>
-<label>THUMBNAIL URL</label>
-<input id="thumbnail" type="url" placeholder="https://example.com/thumb.png">
-</div>
-<div>
-<label>EMBED COLOR</label>
-<input id="color" type="color" value="#5865F2">
-</div>
-</div>
+    <div class="modal-body">
 
-<label>FOOTER</label>
-<input id="footer" placeholder="Footer">
+      <div class="field">
+        <label class="label">Config Name</label>
+        <input id="configName" type="text" placeholder="My Config">
+      </div>
 
-<label class="check">
-<input id="timestamp" type="checkbox">
-Timestamp
-</label>
+      <div class="field">
+        <label class="label">Webhook URL</label>
+        <input id="cfgWebhook" type="url">
+      </div>
 
-<label class="check">
-<input id="plain" type="checkbox">
-Plain Message
-</label>
-</div>
+      <div class="row">
+        <div class="field">
+          <label class="label">Username</label>
+          <input id="cfgUsername" type="text">
+        </div>
+        <div class="field">
+          <label class="label">Avatar URL</label>
+          <input id="cfgAvatar" type="url">
+        </div>
+      </div>
 
-<div class="section">
-<div class="row">
-<div>
-<label>REPEAT</label>
-<input id="repeat" type="number" value="1" min="1" max="20">
-</div>
-<div>
-<label>DELAY (SECONDS)</label>
-<input id="delay" type="number" value="5" min="1" max="3600">
-</div>
-</div>
+      <div class="field">
+        <label class="label">Banner URL</label>
+        <input id="cfgBanner" type="url">
+      </div>
 
-<button id="send">SEND WEBHOOK</button>
-<div class="status" id="status"></div>
-</div>
+      <div class="field">
+        <label class="label">Embed Title</label>
+        <input id="cfgTitle" type="text">
+      </div>
 
-<div class="section">
-<div class="preview-title">PREVIEW</div>
+      <div class="field">
+        <label class="label">Description / Message</label>
+        <textarea id="cfgMessage"></textarea>
+      </div>
 
-<div class="profile">
-<div class="banner" id="previewBanner"></div>
+      <div class="row">
+        <div class="field">
+          <label class="label">Thumbnail URL</label>
+          <input id="cfgThumbnail" type="url">
+        </div>
+        <div class="field">
+          <label class="label">Footer</label>
+          <input id="cfgFooter" type="text">
+        </div>
+      </div>
 
-<div class="profile-body">
-<img class="avatar" id="previewAvatar">
+      <div class="field">
+        <label class="label">Embed Color</label>
+        <div class="color-wrap">
+          <input id="cfgColor" type="color" value="#5865F2">
+          <input id="cfgColorText" type="text" value="#5865F2" maxlength="7">
+        </div>
+      </div>
 
-<div class="username" id="previewUsername">Webhook</div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <strong>Timestamp</strong>
+        </div>
+        <label class="switch">
+          <input id="cfgTimestamp" type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
 
-<div class="embed" id="previewEmbed">
-<img class="thumb" id="previewThumb">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <strong>Plain Message</strong>
+        </div>
+        <label class="switch">
+          <input id="cfgPlain" type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
 
-<div class="embed-title" id="previewTitle">Title</div>
-<div class="embed-desc" id="previewDesc">Write your message...</div>
-<div class="clear"></div>
-<div class="footer" id="previewFooter"></div>
-</div>
+      <div class="row">
+        <div class="field">
+          <label class="label">Repeat</label>
+          <input id="cfgRepeat" type="number" min="1" max="20" value="1">
+        </div>
 
-</div>
-</div>
-</div>
+        <div class="field">
+          <label class="label">Delay (seconds)</label>
+          <input id="cfgDelay" type="number" min="1" max="3600" value="1">
+        </div>
+      </div>
 
-</div>
-</div>
+    </div>
 
-<div class="modal" id="configModal">
-<div class="modalbox">
-
-<div class="modalhead">
-<strong>Configs</strong>
-<button class="close" id="closeConfig">×</button>
-</div>
-
-<input class="search" id="configSearch" placeholder="Search config...">
-
-<div class="configlist" id="configList"></div>
-
-<button id="newConfig" class="smallbtn">NEW CONFIG</button>
-
-</div>
-</div>
-
-<div class="modal" id="editModal">
-<div class="modalbox">
-
-<div class="modalhead">
-<strong>Edit Config</strong>
-<button class="close" id="closeEdit">×</button>
-</div>
-
-<div class="confirmtext">
-Edit the settings saved in this config.
-</div>
-
-<div class="savebuttons">
-<button id="saveEdit">SAVE</button>
-<button id="cancelEdit" class="cancel">CANCEL</button>
+    <div class="modal-foot">
+      <button class="btn ripple-btn" id="editorCancel">CANCEL</button>
+      <button class="btn primary ripple-btn" id="editorSave">SAVE</button>
+    </div>
+  </div>
 </div>
 
-</div>
-</div>
+<!-- AUTOMATION -->
+<div class="modal-backdrop" id="automationModal">
+  <div class="modal">
 
-<div class="modal" id="newModal">
-<div class="modalbox">
+    <div class="modal-head">
+      <h3>AUTOMATION SENDER</h3>
+      <button class="iconbtn ripple-btn closeModal" data-close="automationModal">×</button>
+    </div>
 
-<div class="modalhead">
-<strong>Config Name</strong>
-<button class="close" id="closeNew">×</button>
-</div>
+    <div class="modal-body">
 
-<input id="configName" placeholder="Config Name">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <strong>Automation</strong>
+          <small id="automationStatus">OFF</small>
+        </div>
 
-<div class="savebuttons">
-<button id="saveNew">SAVE</button>
-<button id="cancelNew" class="cancel">CANCEL</button>
-</div>
+        <label class="switch">
+          <input id="automationToggle" type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
 
-</div>
-</div>
+      <div class="row">
+        <div class="field">
+          <label class="label">Repeat</label>
+          <input id="autoRepeat" type="number" min="1" max="20" value="1">
+        </div>
 
-<div class="modal" id="confirmModal">
-<div class="modalbox">
+        <div class="field">
+          <label class="label">Delay (seconds)</label>
+          <input id="autoDelay" type="number" min="1" max="3600" value="1">
+        </div>
+      </div>
 
-<div class="modalhead">
-<strong>Really bro?</strong>
-</div>
+      <div class="status" id="automationProgress">
+        Automation is OFF
+      </div>
 
-<div class="confirmtext">
-Cancel without saving your changes?
-</div>
-
-<div class="savebuttons">
-<button id="confirmYes">YES</button>
-<button id="confirmNo" class="cancel">NO</button>
-</div>
-
-</div>
-</div>
-
-<div class="modal" id="automationModal">
-<div class="modalbox">
-
-<div class="modalhead">
-<strong>Automation Sender</strong>
-<button class="close" id="closeAutomation">×</button>
+    </div>
+  </div>
 </div>
 
-<label>INTERVAL (SECONDS)</label>
-<input id="autoInterval" type="number" min="1" max="3600" value="10">
+<!-- SETTINGS -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal">
 
-<label>MAX SENDS</label>
-<input id="autoCount" type="number" min="1" max="20" value="5">
+    <div class="modal-head">
+      <h3>UI SETTINGS</h3>
+      <button class="iconbtn ripple-btn closeModal" data-close="settingsModal">×</button>
+    </div>
 
-<div class="savebuttons">
-<button id="startAutomation">START</button>
-<button id="stopAutomation" class="stop">STOP</button>
+    <div class="modal-body">
+
+      <div class="setting-row">
+        <div>
+          <strong>Accent Color</strong>
+          <small>Change the main UI color</small>
+        </div>
+      </div>
+
+      <div class="color-presets" id="colorPresets">
+        <button class="color-preset" data-color="#5865F2" style="background:#5865F2"></button>
+        <button class="color-preset" data-color="#00A8FC" style="background:#00A8FC"></button>
+        <button class="color-preset" data-color="#00D4A8" style="background:#00D4A8"></button>
+        <button class="color-preset" data-color="#8B5CF6" style="background:#8B5CF6"></button>
+        <button class="color-preset" data-color="#EC4899" style="background:#EC4899"></button>
+        <button class="color-preset" data-color="#FF7A00" style="background:#FF7A00"></button>
+      </div>
+
+      <div style="height:15px"></div>
+
+      <div class="setting-row">
+        <div>
+          <strong>Custom Accent</strong>
+          <small>Pick any UI color</small>
+        </div>
+        <input id="uiColor" type="color" value="#5865F2">
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>Gradient UI</strong>
+          <small>Static premium gradient background</small>
+        </div>
+
+        <label class="switch">
+          <input id="gradientToggle" type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<div class="autoStatus" id="autoStatus"></div>
-
-</div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
 const $=id=>document.getElementById(id);
 
-const defaults={
-avatar:"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300",
-banner:"https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200"
-};
+const KEY_CONFIGS="webhook_sender_configs_v4";
+const KEY_UI="webhook_sender_ui_v4";
 
-const fields=[
-"webhook","username","avatar","banner","title","message",
-"thumbnail","color","footer","timestamp","plain","repeat","delay"
-];
-
-let configs=JSON.parse(localStorage.getItem("webhook_configs")||"{}");
-let editingConfig=null;
-let beforeEdit=null;
+let configs=JSON.parse(localStorage.getItem(KEY_CONFIGS)||"[]");
+let uiSettings=JSON.parse(localStorage.getItem(KEY_UI)||'{"accent":"#5865F2","gradient":true}');
+let editingConfigId=null;
+let automationTimer=null;
 let automationRunning=false;
 
-$("previewAvatar").src=defaults.avatar;
-$("previewBanner").style.backgroundImage=`url("${defaults.banner}")`;
-
-function getData(){
-const data={};
-fields.forEach(id=>{
-const el=$(id);
-data[id]=el.type==="checkbox"?el.checked:el.value;
-});
-return data;
+function saveConfigs(){
+  localStorage.setItem(KEY_CONFIGS,JSON.stringify(configs));
 }
 
-function setData(data){
-fields.forEach(id=>{
-const el=$(id);
-if(!(id in data))return;
-if(el.type==="checkbox")el.checked=!!data[id];
-else el.value=data[id];
-});
-update();
+function saveUI(){
+  localStorage.setItem(KEY_UI,JSON.stringify(uiSettings));
 }
 
-function update(){
-const avatar=$("avatar").value.trim();
-const banner=$("banner").value.trim();
-const username=$("username").value.trim();
-const title=$("title").value;
-const message=$("message").value;
-const thumb=$("thumbnail").value.trim();
-const footer=$("footer").value;
-const color=$("color").value;
-
-$("previewAvatar").src=avatar||defaults.avatar;
-
-$("previewBanner").style.backgroundImage=
-banner?`url("${banner}")`:`url("${defaults.banner}")`;
-
-$("previewUsername").textContent=username||"Webhook";
-$("previewTitle").textContent=title||"Title";
-$("previewDesc").textContent=message||"Write your message...";
-$("previewEmbed").style.borderLeftColor=color;
-
-if(thumb){
-$("previewThumb").src=thumb;
-$("previewThumb").style.display="block";
-}else{
-$("previewThumb").style.display="none";
+function clamp(n,min,max){
+  n=Number(n)||min;
+  return Math.max(min,Math.min(max,n));
 }
 
-$("previewFooter").textContent=footer||"";
-$("previewEmbed").style.display=$("plain").checked?"none":"block";
+function normalizeHex(v){
+  v=String(v||"").trim();
+  if(!/^#[0-9a-fA-F]{6}$/.test(v))return "#5865F2";
+  return v.toUpperCase();
 }
 
-fields.forEach(id=>{
-$(id).addEventListener("input",update);
-$(id).addEventListener("change",update);
-});
+function applyUI(){
+  const accent=normalizeHex(uiSettings.accent);
+  document.documentElement.style.setProperty("--accent",accent);
+
+  const second=adjustColor(accent,35);
+  document.documentElement.style.setProperty("--accent2",second);
+
+  document.body.classList.toggle("no-gradient",!uiSettings.gradient);
+
+  $("uiColor").value=accent;
+  $("gradientToggle").checked=!!uiSettings.gradient;
+
+  document.querySelectorAll(".color-preset").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      btn.dataset.color.toUpperCase()===accent.toUpperCase()
+    );
+  });
+}
+
+function adjustColor(hex,amount){
+  const num=parseInt(hex.slice(1),16);
+  let r=(num>>16)+amount;
+  let g=((num>>8)&255)+amount;
+  let b=(num&255)+amount;
+  r=Math.max(0,Math.min(255,r));
+  g=Math.max(0,Math.min(255,g));
+  b=Math.max(0,Math.min(255,b));
+  return "#"+[r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+
+function toast(msg){
+  const t=$("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove("show"),2200);
+}
 
 function openModal(id){
-$(id).classList.add("show");
+  $(id).style.display="flex";
 }
 
 function closeModal(id){
-$(id).classList.remove("show");
+  $(id).style.display="none";
 }
 
-function renderConfigs(filter=""){
-const list=$("configList");
-list.innerHTML="";
-
-const names=Object.keys(configs)
-.filter(name=>name.toLowerCase().includes(filter.toLowerCase()))
-.sort((a,b)=>a.localeCompare(b));
-
-if(!names.length){
-list.innerHTML='<div class="empty">No configs found</div>';
-return;
-}
-
-names.forEach(name=>{
-
-const item=document.createElement("div");
-item.className="configitem";
-
-const text=document.createElement("div");
-text.className="configname";
-text.textContent=name;
-
-text.onclick=()=>{
-setData(configs[name]);
-closeModal("configModal");
-};
-
-const edit=document.createElement("button");
-edit.className="edit";
-edit.textContent="EDIT";
-
-edit.onclick=e=>{
-e.stopPropagation();
-
-editingConfig=name;
-beforeEdit=JSON.parse(JSON.stringify(configs[name]));
-
-setData(configs[name]);
-
-closeModal("configModal");
-openModal("editModal");
-};
-
-const del=document.createElement("button");
-del.className="delete";
-del.textContent="DELETE";
-
-del.onclick=e=>{
-e.stopPropagation();
-
-if(confirm("Delete config \""+name+"\"?")){
-delete configs[name];
-localStorage.setItem("webhook_configs",JSON.stringify(configs));
-renderConfigs($("configSearch").value);
-}
-};
-
-item.append(text,edit,del);
-list.appendChild(item);
-
+document.querySelectorAll(".closeModal").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    closeModal(btn.dataset.close);
+  });
 });
+
+document.querySelectorAll(".modal-backdrop").forEach(backdrop=>{
+  backdrop.addEventListener("click",e=>{
+    if(e.target===backdrop)closeModal(backdrop.id);
+  });
+});
+
+function addRipple(e){
+  const btn=e.currentTarget;
+  const rect=btn.getBoundingClientRect();
+  const ripple=document.createElement("span");
+  ripple.className="ripple";
+  ripple.style.left=(e.clientX-rect.left)+"px";
+  ripple.style.top=(e.clientY-rect.top)+"px";
+  btn.appendChild(ripple);
+  setTimeout(()=>ripple.remove(),500);
 }
 
-$("openConfig").onclick=()=>{
-renderConfigs();
-openModal("configModal");
-};
+document.querySelectorAll(".ripple-btn").forEach(btn=>{
+  btn.addEventListener("click",addRipple);
+});
 
-$("closeConfig").onclick=()=>{
-closeModal("configModal");
-};
-
-$("configSearch").oninput=e=>{
-renderConfigs(e.target.value);
-};
-
-$("newConfig").onclick=()=>{
-editingConfig=null;
-$("configName").value="";
-closeModal("configModal");
-openModal("newModal");
-};
-
-$("closeNew").onclick=()=>{
-closeModal("newModal");
-};
-
-$("saveNew").onclick=()=>{
-const name=$("configName").value.trim();
-
-if(!name){
-$("configName").focus();
-return;
+function getMainSettings(){
+  return {
+    webhook:$("webhook").value,
+    username:$("username").value,
+    avatar:$("avatar").value,
+    banner:$("banner").value,
+    title:$("title").value,
+    message:$("message").value,
+    thumbnail:$("thumbnail").value,
+    color:normalizeHex($("color").value),
+    footer:$("footer").value,
+    timestamp:$("timestamp").checked,
+    plain:$("plain").checked,
+    repeat:clamp($("autoRepeat").value||$("repeatFallback")?.value||1,1,20),
+    delay:clamp($("autoDelay").value||1,1,3600)
+  };
 }
 
-if(configs[name]){
-$("configName").focus();
-return;
+function loadMainSettings(s){
+  $("webhook").value=s.webhook||"";
+  $("username").value=s.username||"";
+  $("avatar").value=s.avatar||"";
+  $("banner").value=s.banner||"";
+  $("title").value=s.title||"";
+  $("message").value=s.message||"";
+  $("thumbnail").value=s.thumbnail||"";
+  $("color").value=normalizeHex(s.color||"#5865F2");
+  $("colorText").value=normalizeHex(s.color||"#5865F2");
+  $("footer").value=s.footer||"";
+  $("timestamp").checked=!!s.timestamp;
+  $("plain").checked=!!s.plain;
+
+  $("autoRepeat").value=clamp(s.repeat||1,1,20);
+  $("autoDelay").value=clamp(s.delay||1,1,3600);
+
+  updatePreview();
 }
 
-configs[name]=getData();
-localStorage.setItem("webhook_configs",JSON.stringify(configs));
-
-closeModal("newModal");
-renderConfigs();
-openModal("configModal");
-};
-
-$("cancelNew").onclick=()=>{
-closeModal("newModal");
-openModal("confirmModal");
-};
-
-$("closeEdit").onclick=()=>{
-closeModal("editModal");
-};
-
-$("saveEdit").onclick=()=>{
-if(!editingConfig)return;
-
-configs[editingConfig]=getData();
-
-localStorage.setItem("webhook_configs",JSON.stringify(configs));
-
-beforeEdit=JSON.parse(JSON.stringify(configs[editingConfig]));
-
-closeModal("editModal");
-
-renderConfigs();
-openModal("configModal");
-};
-
-$("cancelEdit").onclick=()=>{
-closeModal("editModal");
-openModal("confirmModal");
-};
-
-$("confirmYes").onclick=()=>{
-closeModal("confirmModal");
-
-if(editingConfig&&beforeEdit){
-setData(beforeEdit);
+function getEditorSettings(){
+  return {
+    webhook:$("cfgWebhook").value,
+    username:$("cfgUsername").value,
+    avatar:$("cfgAvatar").value,
+    banner:$("cfgBanner").value,
+    title:$("cfgTitle").value,
+    message:$("cfgMessage").value,
+    thumbnail:$("cfgThumbnail").value,
+    color:normalizeHex($("cfgColor").value),
+    footer:$("cfgFooter").value,
+    timestamp:$("cfgTimestamp").checked,
+    plain:$("cfgPlain").checked,
+    repeat:clamp($("cfgRepeat").value,1,20),
+    delay:clamp($("cfgDelay").value,1,3600)
+  };
 }
 
-openModal("configModal");
-};
-
-$("confirmNo").onclick=()=>{
-closeModal("confirmModal");
-
-if(editingConfig){
-openModal("editModal");
-}else{
-openModal("newModal");
+function fillEditor(s={}){
+  $("configName").value=s.name||"";
+  $("cfgWebhook").value=s.webhook||"";
+  $("cfgUsername").value=s.username||"";
+  $("cfgAvatar").value=s.avatar||"";
+  $("cfgBanner").value=s.banner||"";
+  $("cfgTitle").value=s.title||"";
+  $("cfgMessage").value=s.message||"";
+  $("cfgThumbnail").value=s.thumbnail||"";
+  $("cfgColor").value=normalizeHex(s.color||"#5865F2");
+  $("cfgColorText").value=normalizeHex(s.color||"#5865F2");
+  $("cfgFooter").value=s.footer||"";
+  $("cfgTimestamp").checked=!!s.timestamp;
+  $("cfgPlain").checked=!!s.plain;
+  $("cfgRepeat").value=clamp(s.repeat||1,1,20);
+  $("cfgDelay").value=clamp(s.delay||1,1,3600);
 }
+
+function createConfigData(){
+  return {
+    id:crypto.randomUUID(),
+    name:"",
+    webhook:"",
+    username:"",
+    avatar:"",
+    banner:"",
+    title:"",
+    message:"",
+    thumbnail:"",
+    color:"#5865F2",
+    footer:"",
+    timestamp:false,
+    plain:false,
+    repeat:1,
+    delay:1
+  };
+}
+
+function renderConfigs(){
+  const list=$("configList");
+  const search=$("configSearch").value.trim().toLowerCase();
+  list.innerHTML="";
+
+  const filtered=configs.filter(c=>
+    String(c.name||"").toLowerCase().includes(search)
+  );
+
+  if(!filtered.length){
+    list.innerHTML='<div class="empty-preview">No saved configs.</div>';
+    return;
+  }
+
+  filtered.forEach(c=>{
+    const item=document.createElement("div");
+    item.className="config-item";
+
+    const name=document.createElement("div");
+    name.className="config-name";
+    name.textContent=c.name||"Unnamed Config";
+
+    const actions=document.createElement("div");
+    actions.className="config-actions";
+
+    const load=document.createElement("button");
+    load.textContent="LOAD";
+    load.onclick=()=>{
+      loadMainSettings(c);
+      closeModal("configModal");
+      toast("Config loaded: "+(c.name||"Unnamed Config"));
+    };
+
+    const edit=document.createElement("button");
+    edit.textContent="EDIT";
+    edit.onclick=()=>{
+      editingConfigId=c.id;
+      $("editorTitle").textContent="EDIT CONFIG";
+      fillEditor(c);
+      closeModal("configModal");
+      openModal("configEditorModal");
+    };
+
+    const del=document.createElement("button");
+    del.textContent="DELETE";
+    del.className="delete";
+    del.onclick=()=>{
+      if(confirm("Delete this config?")){
+        configs=configs.filter(x=>x.id!==c.id);
+        saveConfigs();
+        renderConfigs();
+        toast("Config deleted.");
+      }
+    };
+
+    actions.append(load,edit,del);
+    item.append(name,actions);
+    list.appendChild(item);
+  });
+}
+
+function openNewConfig(){
+  editingConfigId=null;
+  $("editorTitle").textContent="NEW CONFIG";
+  fillEditor(createConfigData());
+  openModal("configEditorModal");
+}
+
+$("configBtn").onclick=()=>{
+  renderConfigs();
+  openModal("configModal");
 };
 
-function sleep(ms){
-return new Promise(resolve=>setTimeout(resolve,ms));
+$("newConfigBtn").onclick=()=>{
+  openNewConfig();
+};
+
+$("configSearch").addEventListener("input",renderConfigs);
+
+$("editorCancel").onclick=()=>{
+  if(confirm("Really bro?")){
+    closeModal("configEditorModal");
+    editingConfigId=null;
+  }
+};
+
+$("editorSave").onclick=()=>{
+  const name=$("configName").value.trim();
+
+  if(!name){
+    toast("Config name is required.");
+    $("configName").focus();
+    return;
+  }
+
+  const settings=getEditorSettings();
+
+  if(editingConfigId){
+    const index=configs.findIndex(c=>c.id===editingConfigId);
+
+    if(index<0){
+      toast("Config not found.");
+      return;
+    }
+
+    const collision=configs.find(c=>
+      c.id!==editingConfigId &&
+      c.name.trim().toLowerCase()===name.toLowerCase()
+    );
+
+    if(collision){
+      toast("That config name already exists.");
+      return;
+    }
+
+    configs[index]={
+      ...configs[index],
+      ...settings,
+      name
+    };
+
+    saveConfigs();
+    closeModal("configEditorModal");
+    renderConfigs();
+    toast("Config updated.");
+    editingConfigId=null;
+    return;
+  }
+
+  const collision=configs.find(c=>
+    c.name.trim().toLowerCase()===name.toLowerCase()
+  );
+
+  if(collision){
+    toast("That config name already exists.");
+    return;
+  }
+
+  configs.push({
+    ...settings,
+    id:crypto.randomUUID(),
+    name
+  });
+
+  saveConfigs();
+  closeModal("configEditorModal");
+  renderConfigs();
+  toast("Config saved.");
+};
+
+function updatePreview(){
+  const name=$("username").value.trim()||"Webhook";
+  const avatar=$("avatar").value.trim();
+  const banner=$("banner").value.trim();
+  const title=$("title").value;
+  const message=$("message").value;
+  const thumbnail=$("thumbnail").value.trim();
+  const footer=$("footer").value;
+  const color=normalizeHex($("color").value);
+  const plain=$("plain").checked;
+
+  $("previewName").textContent=name;
+  $("embedPreview").style.borderLeftColor=color;
+
+  if(avatar){
+    $("avatarImg").src=avatar;
+    $("avatarImg").classList.remove("hidden");
+    $("avatarFallback").classList.add("hidden");
+
+    $("avatarImg").onerror=()=>{
+      $("avatarImg").classList.add("hidden");
+      $("avatarFallback").classList.remove("hidden");
+    };
+  }else{
+    $("avatarImg").classList.add("hidden");
+    $("avatarFallback").classList.remove("hidden");
+  }
+
+  if(banner){
+    $("bannerImg").src=banner;
+    $("bannerImg").style.display="block";
+
+    $("bannerImg").onerror=()=>{
+      $("bannerImg").style.display="none";
+    };
+  }else{
+    $("bannerImg").style.display="none";
+  }
+
+  if(thumbnail){
+    $("thumbImg").src=thumbnail;
+    $("thumbImg").style.display="block";
+
+    $("thumbImg").onerror=()=>{
+      $("thumbImg").style.display="none";
+    };
+  }else{
+    $("thumbImg").style.display="none";
+  }
+
+  $("previewTitle").textContent=title||"Embed Title";
+  $("previewMessage").textContent=message||"Your message will appear here.";
+  $("previewFooter").textContent=footer||"Footer";
+
+  if(plain){
+    $("embedPreview").classList.add("hidden");
+    $("plainPreview").classList.remove("hidden");
+    $("plainPreview").textContent=message||"Your message will appear here.";
+  }else{
+    $("embedPreview").classList.remove("hidden");
+    $("plainPreview").classList.add("hidden");
+  }
+}
+
+[
+  "webhook","username","avatar","banner","title","message",
+  "thumbnail","footer"
+].forEach(id=>{
+  $(id).addEventListener("input",updatePreview);
+});
+
+$("color").addEventListener("input",()=>{
+  $("colorText").value=$("color").value.toUpperCase();
+  updatePreview();
+});
+
+$("colorText").addEventListener("input",()=>{
+  const v=normalizeHex($("colorText").value);
+
+  if(/^#[0-9A-Fa-f]{6}$/.test($("colorText").value)){
+    $("color").value=v;
+    updatePreview();
+  }
+});
+
+$("plain").addEventListener("change",updatePreview);
+
+$("cfgColor").addEventListener("input",()=>{
+  $("cfgColorText").value=$("cfgColor").value.toUpperCase();
+});
+
+$("cfgColorText").addEventListener("input",()=>{
+  if(/^#[0-9A-Fa-f]{6}$/.test($("cfgColorText").value)){
+    $("cfgColor").value=$("cfgColorText").value;
+  }
+});
+
+$("clearBtn").onclick=()=>{
+  [
+    "webhook","username","avatar","banner","title",
+    "message","thumbnail","footer"
+  ].forEach(id=>$(id).value="");
+
+  $("color").value="#5865F2";
+  $("colorText").value="#5865F2";
+  $("timestamp").checked=false;
+  $("plain").checked=false;
+  $("autoRepeat").value=1;
+  $("autoDelay").value=1;
+
+  updatePreview();
+  $("status").textContent="";
+};
+
+function buildWebhookPayload(){
+  const webhook=$("webhook").value.trim();
+  const username=$("username").value.trim();
+  const avatar=$("avatar").value.trim();
+  const title=$("title").value;
+  const message=$("message").value;
+  const thumbnail=$("thumbnail").value.trim();
+  const footer=$("footer").value;
+  const color=normalizeHex($("color").value);
+  const timestamp=$("timestamp").checked;
+  const plain=$("plain").checked;
+
+  if(!webhook)throw new Error("Webhook URL required.");
+  if(!message&&!title)throw new Error("Message or title required.");
+
+  const payload={
+    username:username||"Webhook"
+  };
+
+  if(avatar)payload.avatar_url=avatar;
+
+  if(plain){
+    payload.content=message;
+    return {webhook,payload};
+  }
+
+  const embed={
+    color:parseInt(color.slice(1),16)
+  };
+
+  if(title)embed.title=title;
+  if(message)embed.description=message;
+  if(thumbnail)embed.thumbnail={url:thumbnail};
+  if(footer)embed.footer={text:footer};
+  if(timestamp)embed.timestamp=new Date().toISOString();
+
+  payload.embeds=[embed];
+
+  return {webhook,payload};
 }
 
 async function sendOnce(){
+  const {webhook,payload}=buildWebhookPayload();
 
-const webhook=$("webhook").value.trim();
-const username=$("username").value.trim();
-const avatar=$("avatar").value.trim();
-const title=$("title").value;
-const message=$("message").value;
-const thumbnail=$("thumbnail").value.trim();
-const footer=$("footer").value;
-const color=$("color").value;
-const timestamp=$("timestamp").checked;
-const plain=$("plain").checked;
+  const res=await fetch(webhook,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(payload)
+  });
 
-if(!webhook)throw new Error("Webhook URL required.");
-if(!message&&!title)throw new Error("Message or title required.");
-
-const payload={
-username:username||"Webhook"
-};
-
-if(avatar)payload.avatar_url=avatar;
-
-if(plain){
-
-payload.content=message;
-
-}else{
-
-const embed={
-color:parseInt(color.replace("#",""),16)
-};
-
-if(title)embed.title=title;
-if(message)embed.description=message;
-if(thumbnail)embed.thumbnail={url:thumbnail};
-if(footer)embed.footer={text:footer};
-if(timestamp)embed.timestamp=new Date().toISOString();
-
-payload.embeds=[embed];
-
+  if(!res.ok){
+    throw new Error("Discord returned HTTP "+res.status);
+  }
 }
 
-const res=await fetch(webhook,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(payload)
+$("sendBtn").onclick=async()=>{
+  try{
+    $("status").textContent="Sending...";
+    await sendOnce();
+    $("status").textContent="Webhook sent successfully.";
+    toast("Message sent.");
+  }catch(err){
+    $("status").textContent="Error: "+err.message;
+    toast(err.message);
+  }
+};
+
+$("automationBtn").onclick=()=>{
+  openModal("automationModal");
+};
+
+function stopAutomation(msg="Automation is OFF"){
+  automationRunning=false;
+  clearTimeout(automationTimer);
+  automationTimer=null;
+  $("automationToggle").checked=false;
+  $("automationStatus").textContent="OFF";
+  $("automationProgress").textContent=msg;
+}
+
+async function runAutomation(){
+  if(!automationRunning)return;
+
+  const repeat=clamp($("autoRepeat").value,1,20);
+  const delay=clamp($("autoDelay").value,1,3600);
+
+  $("autoRepeat").value=repeat;
+  $("autoDelay").value=delay;
+
+  for(let i=0;i<repeat;i++){
+    if(!automationRunning)return;
+
+    $("automationProgress").textContent=
+      "Sending "+(i+1)+" of "+repeat+"...";
+
+    try{
+      await sendOnce();
+
+      $("status").textContent=
+        "Automation sent "+(i+1)+" of "+repeat;
+    }catch(err){
+      $("automationProgress").textContent=
+        "Stopped: "+err.message;
+      stopAutomation("Automation stopped because sending failed.");
+      return;
+    }
+
+    if(i<repeat-1){
+      await new Promise(resolve=>{
+        automationTimer=setTimeout(resolve,delay*1000);
+      });
+
+      if(!automationRunning)return;
+    }
+  }
+
+  stopAutomation("Automation finished.");
+  toast("Automation finished.");
+}
+
+$("automationToggle").addEventListener("change",()=>{
+  if($("automationToggle").checked){
+    automationRunning=true;
+    $("automationStatus").textContent="ON";
+    $("automationProgress").textContent="Automation started.";
+    runAutomation();
+  }else{
+    stopAutomation("Automation stopped.");
+    toast("Automation OFF");
+  }
 });
 
-if(!res.ok)throw new Error("HTTP "+res.status);
-}
-
-$("send").onclick=async function(e){
-
-const ripple=document.createElement("span");
-ripple.className="ripple";
-
-const rect=this.getBoundingClientRect();
-ripple.style.left=(e.clientX-rect.left)+"px";
-ripple.style.top=(e.clientY-rect.top)+"px";
-
-this.appendChild(ripple);
-setTimeout(()=>ripple.remove(),450);
-
-let repeat=parseInt($("repeat").value)||1;
-let delay=parseFloat($("delay").value)||1;
-
-repeat=Math.max(1,Math.min(20,repeat));
-delay=Math.max(1,Math.min(3600,delay));
-
-this.disabled=true;
-$("status").textContent="Sending...";
-
-try{
-
-for(let i=0;i<repeat;i++){
-
-await sendOnce();
-
-if(i<repeat-1)await sleep(delay*1000);
-
-}
-
-$("status").textContent="Sent successfully.";
-
-}catch(err){
-
-$("status").textContent="Failed: "+err.message;
-
-}
-
-this.disabled=false;
+$("settingsBtn").onclick=()=>{
+  applyUI();
+  openModal("settingsModal");
 };
 
-$("openAutomation").onclick=()=>{
-$("autoStatus").textContent="";
-openModal("automationModal");
-};
+document.querySelectorAll(".color-preset").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    uiSettings.accent=btn.dataset.color;
+    saveUI();
+    applyUI();
+    toast("UI color changed.");
+  });
+});
 
-$("closeAutomation").onclick=()=>{
-closeModal("automationModal");
-};
+$("uiColor").addEventListener("input",()=>{
+  uiSettings.accent=$("uiColor").value;
+  saveUI();
+  applyUI();
+});
 
-$("stopAutomation").onclick=()=>{
-automationRunning=false;
-$("autoStatus").textContent="Automation stopped.";
-};
+$("gradientToggle").addEventListener("change",()=>{
+  uiSettings.gradient=$("gradientToggle").checked;
+  saveUI();
+  applyUI();
+});
 
-$("startAutomation").onclick=async()=>{
+$("autoRepeat").addEventListener("input",()=>{
+  $("autoRepeat").value=clamp($("autoRepeat").value,1,20);
+});
 
-if(automationRunning)return;
+$("autoDelay").addEventListener("input",()=>{
+  $("autoDelay").value=clamp($("autoDelay").value,1,3600);
+});
 
-let interval=parseFloat($("autoInterval").value)||10;
-let count=parseInt($("autoCount").value)||5;
+$("cfgRepeat").addEventListener("input",()=>{
+  $("cfgRepeat").value=clamp($("cfgRepeat").value,1,20);
+});
 
-interval=Math.max(1,Math.min(3600,interval));
-count=Math.max(1,Math.min(20,count));
+$("cfgDelay").addEventListener("input",()=>{
+  $("cfgDelay").value=clamp($("cfgDelay").value,1,3600);
+});
 
-try{
-
-await sendOnce();
-
-automationRunning=true;
-$("autoStatus").textContent="Running...";
-
-for(let i=1;i<count&&automationRunning;i++){
-
-await sleep(interval*1000);
-
-if(!automationRunning)break;
-
-await sendOnce();
-
-$("autoStatus").textContent=
-"Sent "+(i+1)+"/"+count;
-
-}
-
-if(automationRunning){
-$("autoStatus").textContent="Automation finished.";
-}
-
-}catch(err){
-
-automationRunning=false;
-$("autoStatus").textContent="Failed: "+err.message;
-
-}
-
-automationRunning=false;
-};
-
-update();
+applyUI();
+updatePreview();
 </script>
-
 </body>
 </html>

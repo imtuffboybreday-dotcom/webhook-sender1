@@ -1,141 +1,998 @@
-<!DOCTYPE html>  
-<html lang="id">  
-<head>  
-  <meta charset="UTF-8">  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Discord Webhook Sender</title>  
-  <style>  
-    * { box-sizing: border-box; font-family: system-ui, sans-serif; }  
-    body { background: #1e1f22; color: #dbdee1; margin: 0; padding: 16px; }  
-    .container { max-width: 480px; margin: 0 auto; }  
-    h1 { font-size: 1.4rem; margin-bottom: 4px; }  
-    .credit { font-size: 0.8rem; color: #949ba4; margin-bottom: 20px; }  
-    label { display: block; margin: 12px 0 4px; font-size: 0.9rem; }  
-    input, textarea, select {  
-      width: 100%; padding: 10px; border-radius: 6px;  
-      border: 1px solid #3f4147; background: #2b2d31; color: #dbdee1;  
-    }  
-    textarea { height: 100px; resize: vertical; }  
-    .row { display: flex; gap: 10px; }  
-    .row > div { flex: 1; }  
-    .checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }  
-    button {  
-      width: 100%; padding: 12px; margin-top: 16px;  
-      background: #5865f2; color: white; border: none;  
-      border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer;  
-    }  
-    button:disabled { background: #3f4147; }  
-    .status { margin-top: 12px; font-size: 0.9rem; text-align: center; }  
-    .success { color: #57f287; }  
-    .error { color: #ed4245; }  
-  </style>  
-</head>  
-<body>  
-  <div class="container">  
-    <h1>Discord Webhook Sender</h1>  
-    <div class="credit">by rexpyth</div>  
-  
-    <label>Webhook URL</label>  
-    <input type="text" id="webhook" placeholder="https://discord.com/api/webhooks/...">  
-  
-    <label>Pesan</label>  
-    <textarea id="message" placeholder="Tulis pesan di sini..."></textarea>  
-  
-    <div class="row">  
-      <div>  
-        <label>Ulangi Berapa Kali</label>  
-        <input type="number" id="times" value="5" min="1" max="20">  
-      </div>  
-      <div>  
-        <label>Delay (detik)</label>  
-        <input type="number" id="delay" value="30" min="1">  
-      </div>  
-    </div>  
-  
-    <div class="checkbox">  
-      <input type="checkbox" id="useEmbed">  
-      <label for="useEmbed" style="margin:0">Kirim sebagai Embed</label>  
-    </div>  
-  
-    <div class="checkbox">  
-      <input type="checkbox" id="useUsername">  
-      <label for="useUsername" style="margin:0">Custom Username</label>  
-    </div>  
-  
-    <div id="usernameBox" style="display:none">  
-      <label>Username</label>  
-      <input type="text" id="username" value="rexpyth">  
-    </div>  
-  
-    <button id="sendBtn" onclick="startSend()">Kirim Pesan</button>  
-    <div class="status" id="status"></div>  
-  </div>  
-  
-  <script>  
-    const useUsername = document.getElementById("useUsername");  
-    const usernameBox = document.getElementById("usernameBox");  
-    useUsername.addEventListener("change", () => {  
-      usernameBox.style.display = useUsername.checked ? "block" : "none";  
-    });  
-  
-    async function sendOnce(content, isEmbed, username) {  
-      const url = document.getElementById("webhook").value.trim();  
-      if (!url) throw new Error("Webhook URL kosong");  
-  
-      let payload = { username: username || "rexpyth" };  
-  
-      if (isEmbed) {  
-        payload.embeds = [{  
-          title: "Notification",  
-          description: content,  
-          color: 0x5865F2,  
-          footer: { text: "rexpyth • " + new Date().toLocaleString() }  
-        }];  
-      } else {  
-        payload.content = content;  
-      }  
-  
-      const res = await fetch(url, {  
-        method: "POST",  
-        headers: { "Content-Type": "application/json" },  
-        body: JSON.stringify(payload)  
-      });  
-  
-      if (!res.ok) throw new Error("Gagal kirim (" + res.status + ")");  
-    }  
-  
-    async function startSend() {  
-      const btn = document.getElementById("sendBtn");  
-      const status = document.getElementById("status");  
-      const message = document.getElementById("message").value.trim();  
-      const times = parseInt(document.getElementById("times").value) || 1;  
-      const delay = parseInt(document.getElementById("delay").value) || 30;  
-      const isEmbed = document.getElementById("useEmbed").checked;  
-      const username = document.getElementById("useUsername").checked  
-        ? document.getElementById("username").value  
-        : "rexpyth";  
-  
-      if (!message) {  
-        status.innerHTML = '<span class="error">Pesan tidak boleh kosong</span>';  
-        return;  
-      }  
-  
-      btn.disabled = true;  
-      status.innerHTML = "Mengirim...";  
-  
-      try {  
-        for (let i = 1; i <= times; i++) {  
-          await sendOnce(`${message} | ${i}/${times}`, isEmbed, username);  
-          status.innerHTML = `Terkirim ${i}/${times}`;  
-          if (i < times) await new Promise(r => setTimeout(r, delay * 1000));  
-        }  
-        status.innerHTML = '<span class="success">Selesai dikirim!</span>';  
-      } catch (err) {  
-        status.innerHTML = `<span class="error">${err.message}</span>`;  
-      }  
-  
-      btn.disabled = false;  
-    }  
-  </script>  
-</body>  
-</html>  
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Webhook Studio</title>
+
+<style>
+*{
+box-sizing:border-box;
+font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+
+:root{
+--bg:#07080d;
+--card:rgba(20,22,30,.78);
+--line:rgba(255,255,255,.08);
+--text:#f5f5f7;
+--muted:#9297a5;
+--accent:#5865f2;
+}
+
+body{
+margin:0;
+min-height:100vh;
+padding:20px 14px;
+color:var(--text);
+background:
+radial-gradient(circle at 15% 10%,#5865f233 0,transparent 30%),
+radial-gradient(circle at 90% 85%,#8b5cf633 0,transparent 28%),
+linear-gradient(135deg,#07080d,#10121b 55%,#08090e);
+}
+
+body:before{
+content:"";
+position:fixed;
+inset:0;
+pointer-events:none;
+background:linear-gradient(
+120deg,
+transparent 25%,
+rgba(255,255,255,.025) 50%,
+transparent 75%
+);
+background-size:300% 300%;
+animation:shine 10s linear infinite;
+}
+
+@keyframes shine{
+0%{background-position:200% 0}
+100%{background-position:-200% 0}
+}
+
+.container{
+width:100%;
+max-width:560px;
+margin:auto;
+position:relative;
+z-index:1;
+}
+
+.top{
+text-align:center;
+margin:8px 0 22px;
+}
+
+.logo{
+width:64px;
+height:64px;
+border-radius:18px;
+object-fit:cover;
+border:1px solid rgba(255,255,255,.12);
+box-shadow:
+0 0 25px #5865f255,
+0 10px 40px #0008;
+}
+
+h1{
+margin:13px 0 3px;
+font-size:25px;
+font-weight:800;
+letter-spacing:-.5px;
+}
+
+.sub{
+font-size:12px;
+color:var(--muted);
+}
+
+.card{
+position:relative;
+overflow:hidden;
+background:var(--card);
+backdrop-filter:blur(20px);
+-webkit-backdrop-filter:blur(20px);
+border:1px solid var(--line);
+border-radius:20px;
+padding:17px;
+box-shadow:
+0 25px 70px #0009,
+inset 0 1px rgba(255,255,255,.035);
+}
+
+.card:before{
+content:"";
+position:absolute;
+top:0;
+left:8%;
+right:8%;
+height:1px;
+background:linear-gradient(
+90deg,
+transparent,
+#5865f2,
+#9b87ff,
+transparent
+);
+box-shadow:0 0 15px #5865f2;
+}
+
+.section{
+margin:19px 0 8px;
+font-size:10px;
+font-weight:800;
+letter-spacing:.12em;
+text-transform:uppercase;
+color:#777d8c;
+}
+
+label{
+display:block;
+font-size:12px;
+color:#aeb3c0;
+margin:10px 0 6px;
+}
+
+input,
+textarea{
+width:100%;
+border:1px solid rgba(255,255,255,.08);
+border-radius:11px;
+outline:none;
+background:rgba(9,10,15,.72);
+color:#fff;
+padding:11px 12px;
+font-size:14px;
+transition:.2s;
+}
+
+input:focus,
+textarea:focus{
+border-color:#5865f2;
+box-shadow:
+0 0 0 2px #5865f21c,
+0 0 20px #5865f218;
+}
+
+textarea{
+height:105px;
+resize:vertical;
+}
+
+.row{
+display:flex;
+gap:10px;
+}
+
+.row>div{
+flex:1;
+}
+
+.color{
+display:flex;
+gap:9px;
+}
+
+.color input[type=color]{
+width:54px;
+height:43px;
+padding:4px;
+cursor:pointer;
+}
+
+.hint{
+font-size:10px;
+color:#656a77;
+margin-top:5px;
+}
+
+.toggle{
+display:flex;
+align-items:center;
+gap:9px;
+margin-top:12px;
+font-size:12px;
+color:#aeb3c0;
+}
+
+.toggle input{
+width:16px;
+height:16px;
+accent-color:#5865f2;
+}
+
+.preview-label{
+margin:20px 0 8px;
+font-size:10px;
+font-weight:800;
+letter-spacing:.12em;
+text-transform:uppercase;
+color:#777d8c;
+}
+
+.preview{
+border:1px solid rgba(255,255,255,.07);
+border-left:3px solid #5865f2;
+border-radius:11px;
+padding:12px;
+background:#17191f;
+box-shadow:0 8px 25px #0004;
+}
+
+.user{
+display:flex;
+align-items:center;
+gap:9px;
+margin-bottom:11px;
+}
+
+.avatar{
+width:37px;
+height:37px;
+border-radius:50%;
+object-fit:cover;
+background:#0b0c10;
+}
+
+.name{
+font-size:13px;
+font-weight:750;
+}
+
+.time{
+font-size:10px;
+color:#6f7480;
+margin-left:4px;
+}
+
+.ptitle{
+font-size:16px;
+font-weight:750;
+margin-bottom:6px;
+}
+
+.pdesc{
+font-size:13px;
+line-height:1.45;
+color:#c8cbd1;
+white-space:pre-wrap;
+}
+
+.banner{
+width:100%;
+max-height:230px;
+object-fit:cover;
+border-radius:8px;
+margin-top:11px;
+display:block;
+}
+
+.thumb{
+width:72px;
+height:72px;
+object-fit:cover;
+border-radius:8px;
+float:right;
+margin:0 0 7px 10px;
+}
+
+.clear{
+clear:both;
+}
+
+.pfooter{
+font-size:10px;
+color:#6f7480;
+margin-top:10px;
+}
+
+button{
+width:100%;
+border:0;
+border-radius:11px;
+padding:13px;
+margin-top:14px;
+font-size:14px;
+font-weight:800;
+color:white;
+cursor:pointer;
+background:
+linear-gradient(
+135deg,
+#5865f2,
+#7657f6,
+#8b5cf6
+);
+box-shadow:
+0 8px 25px #5865f244,
+inset 0 1px rgba(255,255,255,.15);
+transition:.18s;
+}
+
+button:hover{
+transform:translateY(-1px);
+box-shadow:
+0 12px 30px #5865f255,
+inset 0 1px rgba(255,255,255,.18);
+}
+
+button:active{
+transform:scale(.985);
+}
+
+button:disabled{
+opacity:.5;
+cursor:not-allowed;
+transform:none;
+}
+
+.secondary{
+background:rgba(255,255,255,.055);
+box-shadow:none;
+border:1px solid rgba(255,255,255,.07);
+}
+
+.status{
+min-height:17px;
+text-align:center;
+font-size:12px;
+margin-top:11px;
+}
+
+.success{
+color:#57f287;
+}
+
+.error{
+color:#ed4245;
+}
+
+.note{
+margin-top:13px;
+padding:10px;
+border-radius:10px;
+background:rgba(255,255,255,.025);
+border:1px solid rgba(255,255,255,.055);
+font-size:10px;
+line-height:1.5;
+color:#676d79;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="top">
+
+<img
+class="logo"
+src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=200&q=80"
+>
+
+<h1>Webhook Studio</h1>
+<div class="sub">Discord Webhook</div>
+
+</div>
+
+<div class="card">
+
+<div class="section">Webhook</div>
+
+<label>Webhook URL</label>
+<input
+id="webhook"
+type="text"
+placeholder="https://discord.com/api/webhooks/..."
+>
+
+<label>Username</label>
+<input
+id="username"
+type="text"
+value="rexpyth"
+placeholder="Username"
+>
+
+<label>Avatar URL</label>
+<input
+id="avatar"
+type="text"
+value="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80"
+placeholder="Paste avatar URL"
+>
+
+<div class="section">Message</div>
+
+<label>Message</label>
+<textarea
+id="message"
+placeholder="Example"
+></textarea>
+
+<div class="row">
+
+<div>
+<label>Repeat</label>
+<input
+id="times"
+type="number"
+value="1"
+min="1"
+max="20"
+>
+</div>
+
+<div>
+<label>Delay (sec)</label>
+<input
+id="delay"
+type="number"
+value="5"
+min="1"
+max="3600"
+step="1"
+>
+</div>
+
+</div>
+
+<div class="section">Embed</div>
+
+<label>Title</label>
+<input
+id="title"
+type="text"
+value="Notification"
+placeholder="Title"
+>
+
+<label>Banner</label>
+<input
+id="banner"
+type="text"
+value="https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200&q=85"
+placeholder="Paste banner URL"
+>
+
+<label>Thumbnail</label>
+<input
+id="thumbnail"
+type="text"
+placeholder="Paste thumbnail URL"
+>
+
+<label>Color</label>
+
+<div class="color">
+<input
+id="color"
+type="color"
+value="#5865F2"
+>
+
+<input
+id="colorText"
+type="text"
+value="#5865F2"
+placeholder="#5865F2"
+>
+</div>
+
+<label>Footer</label>
+<input
+id="footer"
+type="text"
+value="Webhook Studio"
+placeholder="Footer"
+>
+
+<div class="toggle">
+<input
+id="timestamp"
+type="checkbox"
+checked
+>
+<span>Timestamp</span>
+</div>
+
+<div class="toggle">
+<input
+id="plain"
+type="checkbox"
+>
+<span>Plain message</span>
+</div>
+
+<div class="preview-label">Preview</div>
+
+<div class="preview" id="preview">
+
+<div class="user">
+
+<img
+id="previewAvatar"
+class="avatar"
+>
+
+<div>
+
+<span
+id="previewName"
+class="name"
+>rexpyth</span>
+
+<span class="time">now</span>
+
+</div>
+
+</div>
+
+<img
+id="previewThumb"
+class="thumb"
+style="display:none"
+>
+
+<div
+id="previewTitle"
+class="ptitle"
+>Notification</div>
+
+<div
+id="previewDesc"
+class="pdesc"
+>Example</div>
+
+<img
+id="previewBanner"
+class="banner"
+>
+
+<div class="clear"></div>
+
+<div
+id="previewFooter"
+class="pfooter"
+>Webhook Studio</div>
+
+</div>
+
+<button
+class="secondary"
+onclick="updatePreview()"
+>
+Refresh
+</button>
+
+<button
+id="sendBtn"
+onclick="sendWebhook()"
+>
+Send
+</button>
+
+<div
+id="status"
+class="status"
+></div>
+
+<div class="note">
+Message dikirim persis seperti yang lu tulis. Tidak ada tambahan nomor, counter, atau teks lain ke dalam message.
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const $=id=>document.getElementById(id);
+
+const DEFAULT_AVATAR=
+"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80";
+
+const DEFAULT_BANNER=
+"https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200&q=85";
+
+function safeUrl(url,fallback=""){
+
+try{
+
+const u=new URL(url);
+
+if(
+u.protocol==="http:"||
+u.protocol==="https:"
+){
+return url;
+}
+
+}catch(e){}
+
+return fallback;
+}
+
+function hexToInt(hex){
+return parseInt(hex.replace("#",""),16);
+}
+
+function updatePreview(){
+
+const username=
+$("username").value.trim()||
+"rexpyth";
+
+const avatar=
+safeUrl(
+$("avatar").value.trim(),
+DEFAULT_AVATAR
+);
+
+const title=
+$("title").value.trim()||
+"Notification";
+
+const message=
+$("message").value||
+"Example";
+
+const banner=
+safeUrl(
+$("banner").value.trim(),
+DEFAULT_BANNER
+);
+
+const thumbnail=
+$("thumbnail").value.trim();
+
+const footer=
+$("footer").value.trim()||
+"Webhook Studio";
+
+const color=
+$("color").value;
+
+$("preview").style.borderLeftColor=color;
+
+$("previewAvatar").src=avatar;
+
+$("previewName").textContent=username;
+
+$("previewTitle").textContent=title;
+
+$("previewDesc").textContent=message;
+
+$("previewBanner").src=banner;
+
+$("previewFooter").textContent=footer;
+
+$("colorText").value=color;
+
+if(thumbnail){
+
+const url=safeUrl(thumbnail,"");
+
+if(url){
+
+$("previewThumb").src=url;
+
+$("previewThumb").style.display="block";
+
+}
+
+}else{
+
+$("previewThumb").style.display="none";
+
+}
+
+}
+
+[
+"username",
+"avatar",
+"title",
+"message",
+"banner",
+"thumbnail",
+"footer"
+].forEach(id=>{
+
+$(id).addEventListener(
+"input",
+updatePreview
+);
+
+});
+
+$("color").addEventListener(
+"input",
+()=>{
+
+$("colorText").value=
+$("color").value;
+
+updatePreview();
+
+}
+);
+
+$("colorText").addEventListener(
+"input",
+()=>{
+
+const value=
+$("colorText").value.trim();
+
+if(
+/^#[0-9a-fA-F]{6}$/.test(value)
+){
+
+$("color").value=value;
+
+updatePreview();
+
+}
+
+}
+);
+
+$("plain").addEventListener(
+"change",
+()=>{
+
+const disabled=
+$("plain").checked;
+
+[
+"title",
+"avatar",
+"banner",
+"thumbnail",
+"color",
+"footer",
+"timestamp"
+].forEach(id=>{
+
+$(id).disabled=disabled;
+
+});
+
+updatePreview();
+
+}
+);
+
+function sleep(ms){
+
+return new Promise(
+resolve=>setTimeout(resolve,ms)
+);
+
+}
+
+async function sendWebhook(){
+
+const status=$("status");
+
+const btn=$("sendBtn");
+
+const url=
+$("webhook").value.trim();
+
+const message=
+$("message").value;
+
+if(!url){
+
+status.innerHTML=
+'<span class="error">Webhook URL kosong.</span>';
+
+return;
+
+}
+
+if(
+!/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//i
+.test(url)
+){
+
+status.innerHTML=
+'<span class="error">Webhook URL tidak valid.</span>';
+
+return;
+
+}
+
+if(!message.trim()){
+
+status.innerHTML=
+'<span class="error">Message kosong.</span>';
+
+return;
+
+}
+
+let times=
+parseInt(
+$("times").value,
+10
+)||1;
+
+let delay=
+parseInt(
+$("delay").value,
+10
+)||5;
+
+times=
+Math.min(
+Math.max(times,1),
+20
+);
+
+delay=
+Math.max(
+delay,
+1
+);
+
+const username=
+$("username").value.trim()||
+"rexpyth";
+
+const avatar=
+safeUrl(
+$("avatar").value.trim(),
+""
+);
+
+const title=
+$("title").value.trim();
+
+const banner=
+safeUrl(
+$("banner").value.trim(),
+""
+);
+
+const thumbnail=
+safeUrl(
+$("thumbnail").value.trim(),
+""
+);
+
+const footer=
+$("footer").value.trim();
+
+const timestamp=
+$("timestamp").checked;
+
+const plain=
+$("plain").checked;
+
+btn.disabled=true;
+
+try{
+
+for(
+let i=0;
+i<times;
+i++
+){
+
+const payload={
+username:username
+};
+
+if(avatar){
+
+payload.avatar_url=
+avatar;
+
+}
+
+if(plain){
+
+payload.content=
+message;
+
+}else{
+
+const embed={
+description:message,
+color:hexToInt(
+$("color").value
+)
+};
+
+if(title){
+embed.title=title;
+}
+
+if(banner){
+embed.image={
+url:banner
+};
+}
+
+if(thumbnail){
+embed.thumbnail={
+url:thumbnail
+};
+}
+
+if(footer){
+embed.footer={
+text:footer
+};
+}
+
+if(timestamp){
+embed.timestamp=
+new Date().toISOString();
+}
+
+payload.embeds=[
+embed
+];
+
+}
+
+const res=
+await fetch(
+url,
+{
+method:"POST",
+headers:{
+"Content-Type":
+"application/json"
+},
+body:
+JSON.stringify(payload)
+}
+);
+
+if(!res.ok){
+
+throw new Error(
+"HTTP "+res.status
+);
+
+}
+
+status.innerHTML=
+'<span class="success">Sent ✓</span>';
+
+if(i<times-1){
+
+await sleep(
+delay*1000
+);
+
+}
+
+}
+
+}catch(err){
+
+status.innerHTML=
+'<span class="error">'+
+err.message+
+'</span>';
+
+}
+
+btn.disabled=false;
+
+}
+
+updatePreview();
+
+</script>
+
+</body>
+</html>

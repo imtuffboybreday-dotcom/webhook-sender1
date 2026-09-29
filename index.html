@@ -7,159 +7,51 @@
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#07090f;color:#fff}
-body{
-background:
-radial-gradient(circle at 15% 10%,#182b52 0,transparent 32%),
-radial-gradient(circle at 85% 90%,#17183b 0,transparent 30%),
-#07090f;
-padding:18px;
-}
+body{background:radial-gradient(circle at 15% 10%,#182b52 0,transparent 32%),radial-gradient(circle at 85% 90%,#17183b 0,transparent 30%),#07090f;padding:18px}
 .app{max-width:760px;margin:auto}
-.card{
-background:rgba(14,17,27,.94);
-border:1px solid #242b3c;
-border-radius:18px;
-padding:18px;
-box-shadow:0 12px 40px rgba(0,0,0,.35);
-}
+.card{background:rgba(14,17,27,.94);border:1px solid #242b3c;border-radius:18px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 h1{font-size:22px;margin:0 0 16px}
-.section{
-border:1px solid #242b3c;
-background:#0c1019;
-border-radius:14px;
-padding:14px;
-margin-top:12px;
-}
-label{
-display:block;
-font-size:12px;
-color:#8993a8;
-margin:0 0 7px;
-}
-input,textarea,select{
-width:100%;
-border:1px solid #293247;
-background:#090d15;
-color:#fff;
-border-radius:10px;
-padding:11px 12px;
-outline:none;
-font-size:14px;
-margin-bottom:11px;
-}
+.section{border:1px solid #242b3c;background:#0c1019;border-radius:14px;padding:14px;margin-top:12px}
+label{display:block;font-size:12px;color:#8993a8;margin:0 0 7px}
+input,textarea{width:100%;border:1px solid #293247;background:#090d15;color:#fff;border-radius:10px;padding:11px 12px;outline:none;font-size:14px;margin-bottom:11px}
 input:focus,textarea:focus{border-color:#4d8dff}
 textarea{min-height:105px;resize:vertical}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.check{
-display:flex;
-align-items:center;
-gap:8px;
-font-size:13px;
-color:#cbd2df;
-margin:4px 0;
-}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:#cbd2df;margin:4px 0}
 .check input{width:auto;margin:0}
-button{
-position:relative;
-overflow:hidden;
-width:100%;
-border:0;
-border-radius:11px;
-padding:13px;
-background:linear-gradient(135deg,#5865f2,#3478ff);
-color:white;
-font-weight:700;
-font-size:14px;
-cursor:pointer;
-margin-top:5px;
-}
+button{position:relative;overflow:hidden;width:100%;border:0;border-radius:11px;padding:13px;background:linear-gradient(135deg,#5865f2,#3478ff);color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-top:5px}
 button:active{transform:scale(.985)}
-.ripple{
-position:absolute;
-width:12px;height:12px;
-border-radius:50%;
-background:rgba(255,255,255,.45);
-transform:translate(-50%,-50%);
-pointer-events:none;
-animation:ripple .42s ease-out forwards;
-}
-@keyframes ripple{
-from{opacity:1;transform:translate(-50%,-50%) scale(1)}
-to{opacity:0;transform:translate(-50%,-50%) scale(15)}
-}
-.status{
-font-size:12px;
-color:#8f9ab0;
-margin-top:10px;
-text-align:center;
-min-height:16px;
-}
-.preview-title{
-font-size:12px;
-color:#8993a8;
-margin-bottom:8px;
-}
-.profile{
-position:relative;
-overflow:hidden;
-border:1px solid #2a3142;
-border-radius:14px;
-background:#0b0e16;
-}
-.banner{
-height:115px;
-background:#1a2030 center/cover no-repeat;
-}
-.profile-body{
-padding:0 14px 14px;
-position:relative;
-}
-.avatar{
-width:68px;
-height:68px;
-border-radius:50%;
-border:4px solid #0b0e16;
-object-fit:cover;
-margin-top:-34px;
-background:#111827;
-}
-.username{
-font-size:15px;
-font-weight:700;
-margin-top:6px;
-}
-.embed{
-margin-top:12px;
-border-left:4px solid #5865f2;
-background:#11151f;
-border-radius:5px;
-padding:12px;
-}
+.smallbtn{padding:10px;background:#151b29;border:1px solid #293247}
+.configbtn{margin-bottom:0}
+.ripple{position:absolute;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.45);transform:translate(-50%,-50%);pointer-events:none;animation:ripple .42s ease-out forwards}
+@keyframes ripple{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(15)}}
+.status{font-size:12px;color:#8f9ab0;margin-top:10px;text-align:center;min-height:16px}
+.preview-title{font-size:12px;color:#8993a8;margin-bottom:8px}
+.profile{position:relative;overflow:hidden;border:1px solid #2a3142;border-radius:14px;background:#0b0e16}
+.banner{height:115px;background:#1a2030 center/cover no-repeat}
+.profile-body{padding:0 14px 14px;position:relative}
+.avatar{width:68px;height:68px;border-radius:50%;border:4px solid #0b0e16;object-fit:cover;margin-top:-34px;background:#111827}
+.username{font-size:15px;font-weight:700;margin-top:6px}
+.embed{margin-top:12px;border-left:4px solid #5865f2;background:#11151f;border-radius:5px;padding:12px}
 .embed-title{font-weight:700;font-size:15px;margin-bottom:7px}
 .embed-desc{font-size:13px;color:#c8cfdb;white-space:pre-wrap}
-.embed-media{
-width:100%;
-max-height:240px;
-object-fit:cover;
-border-radius:7px;
-margin-top:10px;
-display:none;
-}
-.thumb{
-float:right;
-width:72px;
-height:72px;
-object-fit:cover;
-border-radius:7px;
-display:none;
-margin-left:10px;
-}
-.footer{
-font-size:11px;
-color:#747f94;
-margin-top:10px;
-}
+.thumb{float:right;width:72px;height:72px;object-fit:cover;border-radius:7px;display:none;margin-left:10px}
+.footer{font-size:11px;color:#747f94;margin-top:10px}
 .clear{clear:both}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:15px;z-index:20}
+.modal.show{display:flex}
+.modalbox{width:100%;max-width:430px;background:#0d111b;border:1px solid #293247;border-radius:16px;padding:16px;box-shadow:0 20px 70px rgba(0,0,0,.6)}
+.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.modalhead strong{font-size:17px}
+.close{width:auto;margin:0;padding:7px 11px;background:#151b29;border:1px solid #293247}
+.search{margin-bottom:10px}
+.configlist{max-height:55vh;overflow:auto}
+.configitem{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#101622;border:1px solid #242d40;border-radius:10px;padding:10px;margin-bottom:8px}
+.configname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;flex:1}
+.delete{width:auto;padding:7px 10px;background:#171b25;border:1px solid #303849}
+.savebuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cancel{background:#151b29;border:1px solid #293247}
+.empty{font-size:12px;color:#69748a;text-align:center;padding:20px}
 @media(max-width:520px){
 body{padding:10px}
 .card{padding:12px;border-radius:15px}
@@ -174,6 +66,10 @@ body{padding:10px}
 <div class="card">
 
 <h1>Webhook Sender</h1>
+
+<div class="section">
+<button class="smallbtn configbtn" id="openConfig">CONFIG</button>
+</div>
 
 <div class="section">
 <label>WEBHOOK URL</label>
@@ -253,14 +149,66 @@ Plain Message
 
 <div class="embed-title" id="previewTitle">Title</div>
 <div class="embed-desc" id="previewDesc">Write your message...</div>
-<img class="embed-media" id="previewMedia">
 <div class="clear"></div>
-
 <div class="footer" id="previewFooter"></div>
 </div>
 
 </div>
 </div>
+</div>
+
+</div>
+</div>
+
+<div class="modal" id="configModal">
+<div class="modalbox">
+
+<div class="modalhead">
+<strong>Configs</strong>
+<button class="close" id="closeConfig">×</button>
+</div>
+
+<input class="search" id="configSearch" placeholder="Search config...">
+
+<div class="configlist" id="configList"></div>
+
+<button id="newConfig" class="smallbtn">NEW CONFIG</button>
+
+</div>
+</div>
+
+<div class="modal" id="saveModal">
+<div class="modalbox">
+
+<div class="modalhead">
+<strong>Config Name</strong>
+<button class="close" id="closeSave">×</button>
+</div>
+
+<input id="configName" placeholder="Config Name">
+
+<div class="savebuttons">
+<button id="saveConfig">SAVE</button>
+<button id="cancelSave" class="cancel">CANCEL</button>
+</div>
+
+</div>
+</div>
+
+<div class="modal" id="confirmModal">
+<div class="modalbox">
+
+<div class="modalhead">
+<strong>Are you sure?</strong>
+</div>
+
+<div style="font-size:13px;color:#aeb7c8;margin-bottom:15px">
+Cancel without saving this config?
+</div>
+
+<div class="savebuttons">
+<button id="confirmYes">YES</button>
+<button id="confirmNo" class="cancel">NO</button>
 </div>
 
 </div>
@@ -274,8 +222,36 @@ avatar:"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300",
 banner:"https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200"
 };
 
+const fields=[
+"webhook","username","avatar","banner","title","message",
+"thumbnail","color","footer","timestamp","plain","repeat","delay"
+];
+
+let configs=JSON.parse(localStorage.getItem("webhook_configs")||"{}");
+let editingConfig=null;
+let beforeConfig=null;
+
 $("previewAvatar").src=defaults.avatar;
 $("previewBanner").style.backgroundImage=`url("${defaults.banner}")`;
+
+function getData(){
+const data={};
+fields.forEach(id=>{
+const el=$(id);
+data[id]=el.type==="checkbox"?el.checked:el.value;
+});
+return data;
+}
+
+function setData(data){
+fields.forEach(id=>{
+const el=$(id);
+if(!(id in data))return;
+if(el.type==="checkbox")el.checked=!!data[id];
+else el.value=data[id];
+});
+update();
+}
 
 function update(){
 const avatar=$("avatar").value.trim();
@@ -288,7 +264,12 @@ const footer=$("footer").value;
 const color=$("color").value;
 
 $("previewAvatar").src=avatar||defaults.avatar;
-$("previewBanner").style.backgroundImage=`url("${banner||defaults.banner}")`;
+
+if(banner){
+$("previewBanner").style.backgroundImage=`url("${banner}")`;
+}else{
+$("previewBanner").style.backgroundImage=`url("${defaults.banner}")`;
+}
 
 $("previewUsername").textContent=username||"Webhook";
 $("previewTitle").textContent=title||"Title";
@@ -302,27 +283,128 @@ $("previewThumb").style.display="block";
 $("previewThumb").style.display="none";
 }
 
-if(footer){
-$("previewFooter").textContent=footer;
-}else{
-$("previewFooter").textContent="";
-}
-
+$("previewFooter").textContent=footer||"";
 $("previewEmbed").style.display=$("plain").checked?"none":"block";
 }
 
-document.querySelectorAll("input,textarea").forEach(el=>{
-el.addEventListener("input",update);
-el.addEventListener("change",update);
+fields.forEach(id=>{
+$(id).addEventListener("input",update);
+$(id).addEventListener("change",update);
 });
 
-$("plain").addEventListener("change",update);
+function openModal(id){
+$(id).classList.add("show");
+}
+
+function closeModal(id){
+$(id).classList.remove("show");
+}
+
+function renderConfigs(filter=""){
+const list=$("configList");
+list.innerHTML="";
+
+const names=Object.keys(configs)
+.filter(name=>name.toLowerCase().includes(filter.toLowerCase()))
+.sort((a,b)=>a.localeCompare(b));
+
+if(!names.length){
+list.innerHTML='<div class="empty">No configs found</div>';
+return;
+}
+
+names.forEach(name=>{
+const item=document.createElement("div");
+item.className="configitem";
+
+const text=document.createElement("div");
+text.className="configname";
+text.textContent=name;
+text.onclick=()=>{
+setData(configs[name]);
+editingConfig=name;
+closeModal("configModal");
+};
+
+const del=document.createElement("button");
+del.className="delete";
+del.textContent="DELETE";
+del.onclick=e=>{
+e.stopPropagation();
+
+if(confirm("Delete config \""+name+"\"?")){
+delete configs[name];
+localStorage.setItem("webhook_configs",JSON.stringify(configs));
+renderConfigs($("configSearch").value);
+}
+};
+
+item.append(text,del);
+list.appendChild(item);
+});
+}
+
+$("openConfig").onclick=()=>{
+renderConfigs();
+openModal("configModal");
+};
+
+$("closeConfig").onclick=()=>closeModal("configModal");
+
+$("configSearch").oninput=e=>renderConfigs(e.target.value);
+
+$("newConfig").onclick=()=>{
+editingConfig=null;
+beforeConfig=getData();
+$("configName").value="";
+closeModal("configModal");
+openModal("saveModal");
+};
+
+$("closeSave").onclick=()=>{
+closeModal("saveModal");
+};
+
+$("saveConfig").onclick=()=>{
+const name=$("configName").value.trim();
+
+if(!name){
+$("configName").focus();
+return;
+}
+
+configs[name]=getData();
+localStorage.setItem("webhook_configs",JSON.stringify(configs));
+
+editingConfig=name;
+beforeConfig=getData();
+
+closeModal("saveModal");
+renderConfigs();
+openModal("configModal");
+};
+
+$("cancelSave").onclick=()=>{
+closeModal("saveModal");
+openModal("confirmModal");
+};
+
+$("confirmYes").onclick=()=>{
+closeModal("confirmModal");
+setData(beforeConfig||getData());
+openModal("configModal");
+};
+
+$("confirmNo").onclick=()=>{
+closeModal("confirmModal");
+openModal("saveModal");
+};
 
 function sleep(ms){
 return new Promise(resolve=>setTimeout(resolve,ms));
 }
 
-$("send").addEventListener("click",async function(e){
+$("send").onclick=async function(e){
 
 const ripple=document.createElement("span");
 ripple.className="ripple";
@@ -379,11 +461,11 @@ payload.content=message;
 }else{
 
 const embed={
-title:title||undefined,
-description:message||undefined,
 color:parseInt(color.replace("#",""),16)
 };
 
+if(title)embed.title=title;
+if(message)embed.description=message;
 if(thumbnail)embed.thumbnail={url:thumbnail};
 if(footer)embed.footer={text:footer};
 if(timestamp)embed.timestamp=new Date().toISOString();
@@ -403,12 +485,13 @@ if(i<repeat-1)await sleep(delay*1000);
 }
 
 $("status").textContent="Sent successfully.";
+
 }catch(err){
 $("status").textContent="Failed: "+err.message;
 }
 
 this.disabled=false;
-});
+};
 
 update();
 </script>

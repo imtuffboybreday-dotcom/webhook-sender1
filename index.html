@@ -23,6 +23,8 @@ button{position:relative;overflow:hidden;width:100%;border:0;border-radius:11px;
 button:active{transform:scale(.985)}
 .smallbtn{padding:10px;background:#151b29;border:1px solid #293247}
 .configbtn{margin-bottom:0}
+.delete,.edit{width:auto;padding:7px 10px;background:#171b25;border:1px solid #303849}
+.edit{background:#18233a;border-color:#304a78}
 .ripple{position:absolute;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.45);transform:translate(-50%,-50%);pointer-events:none;animation:ripple .42s ease-out forwards}
 @keyframes ripple{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(15)}}
 .status{font-size:12px;color:#8f9ab0;margin-top:10px;text-align:center;min-height:16px}
@@ -46,12 +48,12 @@ button:active{transform:scale(.985)}
 .close{width:auto;margin:0;padding:7px 11px;background:#151b29;border:1px solid #293247}
 .search{margin-bottom:10px}
 .configlist{max-height:55vh;overflow:auto}
-.configitem{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#101622;border:1px solid #242d40;border-radius:10px;padding:10px;margin-bottom:8px}
+.configitem{display:flex;align-items:center;gap:7px;background:#101622;border:1px solid #242d40;border-radius:10px;padding:10px;margin-bottom:8px}
 .configname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;flex:1}
-.delete{width:auto;padding:7px 10px;background:#171b25;border:1px solid #303849}
+.empty{font-size:12px;color:#69748a;text-align:center;padding:20px}
 .savebuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cancel{background:#151b29;border:1px solid #293247}
-.empty{font-size:12px;color:#69748a;text-align:center;padding:20px}
+.confirmtext{font-size:14px;color:#aeb7c8;margin-bottom:15px}
 @media(max-width:520px){
 body{padding:10px}
 .card{padding:12px;border-radius:15px}
@@ -181,7 +183,7 @@ Plain Message
 <div class="modalbox">
 
 <div class="modalhead">
-<strong>Config Name</strong>
+<strong id="saveTitle">Config Name</strong>
 <button class="close" id="closeSave">×</button>
 </div>
 
@@ -199,11 +201,11 @@ Plain Message
 <div class="modalbox">
 
 <div class="modalhead">
-<strong>Are you sure?</strong>
+<strong>Really bro?</strong>
 </div>
 
-<div style="font-size:13px;color:#aeb7c8;margin-bottom:15px">
-Cancel without saving this config?
+<div class="confirmtext">
+Cancel without saving your changes?
 </div>
 
 <div class="savebuttons">
@@ -229,7 +231,7 @@ const fields=[
 
 let configs=JSON.parse(localStorage.getItem("webhook_configs")||"{}");
 let editingConfig=null;
-let beforeConfig=null;
+let beforeEdit=null;
 
 $("previewAvatar").src=defaults.avatar;
 $("previewBanner").style.backgroundImage=`url("${defaults.banner}")`;
@@ -265,11 +267,8 @@ const color=$("color").value;
 
 $("previewAvatar").src=avatar||defaults.avatar;
 
-if(banner){
-$("previewBanner").style.backgroundImage=`url("${banner}")`;
-}else{
-$("previewBanner").style.backgroundImage=`url("${defaults.banner}")`;
-}
+$("previewBanner").style.backgroundImage=
+banner?`url("${banner}")`:`url("${defaults.banner}")`;
 
 $("previewUsername").textContent=username||"Webhook";
 $("previewTitle").textContent=title||"Title";
@@ -314,21 +313,42 @@ return;
 }
 
 names.forEach(name=>{
+
 const item=document.createElement("div");
 item.className="configitem";
 
 const text=document.createElement("div");
 text.className="configname";
 text.textContent=name;
+
 text.onclick=()=>{
 setData(configs[name]);
-editingConfig=name;
 closeModal("configModal");
+};
+
+const edit=document.createElement("button");
+edit.className="edit";
+edit.textContent="EDIT";
+
+edit.onclick=e=>{
+e.stopPropagation();
+
+editingConfig=name;
+beforeEdit=JSON.parse(JSON.stringify(configs[name]));
+
+setData(configs[name]);
+
+$("configName").value=name;
+$("saveTitle").textContent="Edit Config";
+
+closeModal("configModal");
+openModal("saveModal");
 };
 
 const del=document.createElement("button");
 del.className="delete";
 del.textContent="DELETE";
+
 del.onclick=e=>{
 e.stopPropagation();
 
@@ -339,8 +359,9 @@ renderConfigs($("configSearch").value);
 }
 };
 
-item.append(text,del);
+item.append(text,edit,del);
 list.appendChild(item);
+
 });
 }
 
@@ -349,14 +370,21 @@ renderConfigs();
 openModal("configModal");
 };
 
-$("closeConfig").onclick=()=>closeModal("configModal");
+$("closeConfig").onclick=()=>{
+closeModal("configModal");
+};
 
-$("configSearch").oninput=e=>renderConfigs(e.target.value);
+$("configSearch").oninput=e=>{
+renderConfigs(e.target.value);
+};
 
 $("newConfig").onclick=()=>{
 editingConfig=null;
-beforeConfig=getData();
+beforeEdit=getData();
+
 $("configName").value="";
+$("saveTitle").textContent="Config Name";
+
 closeModal("configModal");
 openModal("saveModal");
 };
@@ -366,6 +394,7 @@ closeModal("saveModal");
 };
 
 $("saveConfig").onclick=()=>{
+
 const name=$("configName").value.trim();
 
 if(!name){
@@ -373,13 +402,28 @@ $("configName").focus();
 return;
 }
 
+if(editingConfig){
+
+if(name!==editingConfig){
+delete configs[editingConfig];
+}
+
 configs[name]=getData();
+editingConfig=name;
+
+}else{
+
+configs[name]=getData();
+editingConfig=name;
+
+}
+
 localStorage.setItem("webhook_configs",JSON.stringify(configs));
 
-editingConfig=name;
-beforeConfig=getData();
+beforeEdit=JSON.parse(JSON.stringify(configs[name]));
 
 closeModal("saveModal");
+
 renderConfigs();
 openModal("configModal");
 };
@@ -391,7 +435,11 @@ openModal("confirmModal");
 
 $("confirmYes").onclick=()=>{
 closeModal("confirmModal");
-setData(beforeConfig||getData());
+
+if(editingConfig&&beforeEdit){
+setData(beforeEdit);
+}
+
 openModal("configModal");
 };
 
@@ -457,7 +505,9 @@ username:username||"Webhook"
 if(avatar)payload.avatar_url=avatar;
 
 if(plain){
+
 payload.content=message;
+
 }else{
 
 const embed={
@@ -471,6 +521,7 @@ if(footer)embed.footer={text:footer};
 if(timestamp)embed.timestamp=new Date().toISOString();
 
 payload.embeds=[embed];
+
 }
 
 const res=await fetch(webhook,{
@@ -487,7 +538,9 @@ if(i<repeat-1)await sleep(delay*1000);
 $("status").textContent="Sent successfully.";
 
 }catch(err){
+
 $("status").textContent="Failed: "+err.message;
+
 }
 
 this.disabled=false;

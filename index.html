@@ -2,924 +2,551 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>WebhookSendV2.0</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>WebhookSendV2.5</title>
 <style>
 :root{
   --accent:#5865f2;
-  --accent2:#8b5cf6;
-  --bg:#07090f;
-  --panel:rgba(13,16,27,.88);
-  --panel2:rgba(18,22,36,.92);
-  --border:rgba(255,255,255,.09);
-  --text:#f5f7ff;
-  --muted:#9299ad;
+  --accent2:#7289da;
+  --bg:#08090d;
+  --panel:#11131a;
+  --panel2:#151821;
+  --line:rgba(255,255,255,.08);
+  --text:#f3f4f7;
+  --muted:#8e94a3;
   --danger:#ed4245;
-  --success:#3ba55c;
-  --radius:14px;
+  --good:#3ba55d;
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;min-height:100%;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
 body{
-  overflow-x:hidden;
   background:
-    radial-gradient(circle at 15% 10%,rgba(88,101,242,.13),transparent 35%),
-    radial-gradient(circle at 85% 85%,rgba(139,92,246,.10),transparent 35%),
-    #07090f;
+    radial-gradient(circle at 15% 0%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 32%),
+    radial-gradient(circle at 90% 100%,rgba(40,120,255,.08),transparent 30%),
+    #08090d;
 }
-body.no-gradient{
-  background:#07090f;
-}
-button,input,textarea,select{font:inherit}
+button,input,textarea{font:inherit}
 button{cursor:pointer}
-.app{
-  width:min(1180px,100%);
-  margin:auto;
-  padding:18px;
-}
-.topbar{
-  position:sticky;
-  top:10px;
-  z-index:20;
+.top{
+  height:64px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
-  margin-bottom:16px;
-  padding:13px;
-  border:1px solid var(--border);
-  background:rgba(9,12,21,.88);
+  padding:0 18px;
+  border-bottom:1px solid var(--line);
+  background:rgba(8,9,13,.88);
   backdrop-filter:blur(18px);
-  border-radius:16px;
-  box-shadow:0 14px 50px rgba(0,0,0,.28);
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap:11px;
-  min-width:0;
-}
-.logo{
-  width:42px;
-  height:42px;
-  display:grid;
-  place-items:center;
-  border-radius:12px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 8px 28px color-mix(in srgb,var(--accent) 30%,transparent);
-  font-weight:900;
-}
-.brand h1{
-  margin:0;
-  font-size:17px;
-  letter-spacing:.2px;
-}
-.brand span{
-  display:block;
-  margin-top:2px;
-  font-size:11px;
-  color:var(--muted);
-}
-.top-actions{
-  display:flex;
-  gap:8px;
-}
-.iconbtn,.topbtn,.btn{
-  border:1px solid var(--border);
-  color:var(--text);
-  background:rgba(255,255,255,.045);
-  transition:.16s ease;
-}
-.iconbtn:hover,.topbtn:hover,.btn:hover{
-  transform:translateY(-1px);
-  border-color:color-mix(in srgb,var(--accent) 50%,var(--border));
-  background:rgba(255,255,255,.075);
-}
-.iconbtn{
-  width:42px;
-  height:42px;
-  border-radius:12px;
-  font-size:18px;
-}
-.topbtn,.btn{
-  min-height:40px;
-  padding:0 14px;
-  border-radius:11px;
-  font-weight:750;
-}
-.btn.primary{
-  border-color:transparent;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 8px 25px color-mix(in srgb,var(--accent) 25%,transparent);
-}
-.btn.success{background:rgba(59,165,92,.14);border-color:rgba(59,165,92,.35)}
-.btn.danger{background:rgba(237,66,69,.12);border-color:rgba(237,66,69,.3)}
-.btn.small{min-height:34px;padding:0 11px;font-size:12px}
-.main-grid{
-  display:grid;
-  grid-template-columns:minmax(0,1.3fr) minmax(320px,.7fr);
-  gap:16px;
-}
-.card{
-  border:1px solid var(--border);
-  background:var(--panel);
-  backdrop-filter:blur(16px);
-  border-radius:var(--radius);
-  box-shadow:0 18px 55px rgba(0,0,0,.2);
-}
-.section{
-  padding:16px;
-  border-bottom:1px solid rgba(255,255,255,.055);
-}
-.section:last-child{border-bottom:0}
-.section-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-.section-title h2{
-  margin:0;
-  font-size:13px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-}
-.label{
-  display:block;
-  margin:0 0 7px;
-  font-size:11px;
-  color:#b8bfd1;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.65px;
-}
-.field{margin-bottom:13px}
-.field:last-child{margin-bottom:0}
-input,textarea,select{
-  width:100%;
-  border:1px solid var(--border);
-  outline:none;
-  color:var(--text);
-  background:rgba(4,7,13,.74);
-  border-radius:10px;
-  padding:11px 12px;
-  transition:.16s ease;
-}
-input:focus,textarea:focus,select:focus{
-  border-color:color-mix(in srgb,var(--accent) 75%,white 5%);
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent);
-}
-textarea{
-  resize:vertical;
-  min-height:118px;
-}
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.row3{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:10px;
-}
-.color-wrap{
-  display:flex;
-  gap:9px;
-}
-input[type=color]{
-  width:52px;
-  min-width:52px;
-  padding:4px;
-  height:42px;
-}
-.toggle-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:11px 12px;
-  border:1px solid var(--border);
-  border-radius:11px;
-  background:rgba(255,255,255,.025);
-  margin-bottom:9px;
-}
-.toggle-info strong{
-  display:block;
-  font-size:13px;
-}
-.toggle-info small{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-  margin-top:2px;
-}
-.switch{
-  position:relative;
-  width:49px;
-  height:28px;
-  flex:none;
-}
-.switch input{
-  opacity:0;
-  width:0;
-  height:0;
-}
-.slider{
-  position:absolute;
-  inset:0;
-  border-radius:99px;
-  background:#252b39;
-  transition:.2s;
-}
-.slider:before{
-  content:"";
-  position:absolute;
-  width:22px;
-  height:22px;
-  top:3px;
-  left:3px;
-  background:white;
-  border-radius:50%;
-  transition:.2s;
-}
-.switch input:checked + .slider{
-  background:var(--accent);
-}
-.switch input:checked + .slider:before{
-  transform:translateX(21px);
-}
-.actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:9px;
-}
-.status{
-  min-height:18px;
-  margin-top:10px;
-  color:var(--muted);
-  font-size:11px;
-  word-break:break-word;
-}
-.preview-wrap{padding:16px}
-.preview-title{
-  margin:0 0 11px;
-  font-size:13px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-}
-.discord-preview{
-  overflow:hidden;
-  border:1px solid var(--border);
-  border-radius:15px;
-  background:#0c0f16;
-}
-.profile-banner{
-  position:relative;
-  height:112px;
-  overflow:hidden;
-  background:
-    linear-gradient(135deg,
-      color-mix(in srgb,var(--accent) 72%,#05070b),
-      color-mix(in srgb,var(--accent2) 62%,#05070b));
-}
-.profile-banner img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:none;
-}
-.profile-body{
-  position:relative;
-  padding:0 14px 15px;
-}
-.avatar-box{
-  width:72px;
-  height:72px;
-  margin-top:-36px;
-  position:relative;
-  z-index:2;
-}
-.avatar-box img,.avatar-fallback{
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  border:5px solid #0c0f16;
-  object-fit:cover;
-  background:#111725;
-}
-.avatar-fallback{
-  display:grid;
-  place-items:center;
-  font-size:27px;
-  font-weight:900;
-}
-.preview-name{
-  margin-top:9px;
-  font-size:16px;
-  font-weight:850;
-}
-.preview-handle{
-  font-size:11px;
-  color:#8d95aa;
-  margin-top:2px;
-}
-.embed-card{
-  margin-top:14px;
-  padding:12px;
-  border-left:4px solid var(--accent);
-  background:#11151e;
-  border-radius:8px;
-}
-.embed-title{
-  font-size:14px;
-  font-weight:850;
-  margin-bottom:6px;
-}
-.embed-desc{
-  font-size:12px;
-  line-height:1.55;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-.embed-thumb{
-  width:74px;
-  height:74px;
-  object-fit:cover;
-  float:right;
-  margin-left:9px;
-  border-radius:7px;
-  display:none;
-}
-.embed-footer{
-  clear:both;
-  padding-top:9px;
-  margin-top:8px;
-  border-top:1px solid rgba(255,255,255,.06);
-  color:#777f94;
-  font-size:10px;
-}
-.plain-preview{
-  margin-top:14px;
-  padding:12px;
-  background:#11151e;
-  border-radius:8px;
-  font-size:12px;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-.empty-preview{
-  color:#737c90;
-  font-size:12px;
-}
-.modal-backdrop{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:15px;
-  background:rgba(0,0,0,.68);
-  backdrop-filter:blur(8px);
-}
-.modal{
-  width:min(720px,100%);
-  max-height:92vh;
-  overflow:auto;
-  border:1px solid var(--border);
-  background:rgba(10,13,22,.97);
-  border-radius:17px;
-  box-shadow:0 30px 100px rgba(0,0,0,.5);
-}
-.modal-head{
   position:sticky;
   top:0;
-  z-index:2;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:14px 16px;
-  border-bottom:1px solid var(--border);
-  background:rgba(10,13,22,.94);
-  backdrop-filter:blur(15px);
+  z-index:20;
 }
-.modal-head h3{
-  margin:0;
-  font-size:15px;
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.2px}
+.logo{
+  width:34px;height:34px;border-radius:10px;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--accent),#242733);
+  box-shadow:0 7px 24px color-mix(in srgb,var(--accent) 30%,transparent);
 }
-.modal-body{padding:16px}
-.modal-foot{
-  display:flex;
-  justify-content:flex-end;
-  gap:9px;
-  padding:13px 16px;
-  border-top:1px solid var(--border);
+.actions{display:flex;gap:8px}
+.iconbtn,.topbtn{
+  border:1px solid var(--line);
+  color:#dfe2ea;
+  background:#11131a;
+  border-radius:10px;
+  height:38px;
+  padding:0 12px;
 }
-.config-top{
-  display:flex;
-  gap:9px;
-  margin-bottom:12px;
+.iconbtn{width:38px;padding:0}
+.topbtn:hover,.iconbtn:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:#171a23}
+.wrap{width:min(1180px,calc(100% - 24px));margin:22px auto 50px}
+.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:18px}
+.card{
+  background:rgba(15,17,23,.88);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 16px 45px rgba(0,0,0,.22);
 }
-.config-top input{flex:1}
-.config-list{
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-}
-.config-item{
+.cardhead{
+  padding:18px 20px;
+  border-bottom:1px solid var(--line);
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
-  padding:11px 12px;
-  border:1px solid var(--border);
-  border-radius:11px;
-  background:rgba(255,255,255,.025);
 }
-.config-name{
-  min-width:0;
-  font-size:13px;
-  font-weight:800;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.config-actions{
-  display:flex;
-  gap:6px;
-  flex:none;
-}
-.config-actions button{
-  min-height:31px;
-  padding:0 9px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.04);
-  color:var(--text);
-  font-size:10px;
-  font-weight:800;
-}
-.config-actions .delete{
-  color:#ff8d8f;
-}
-.color-presets{
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  gap:8px;
-}
-.color-preset{
-  height:35px;
-  border-radius:9px;
-  border:2px solid transparent;
-}
-.color-preset.active{
-  border-color:#fff;
-}
-.setting-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:12px 0;
-  border-bottom:1px solid rgba(255,255,255,.055);
-}
-.setting-row:last-child{border-bottom:0}
-.setting-row strong{font-size:13px}
-.setting-row small{
+.cardhead h2{font-size:15px;margin:0}
+.cardhead span{font-size:12px;color:var(--muted)}
+.body{padding:18px 20px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:14px}
+label{
   display:block;
-  color:var(--muted);
-  margin-top:3px;
-  font-size:10px;
-}
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:18px;
-  transform:translate(-50%,20px);
-  opacity:0;
-  z-index:300;
-  max-width:min(92vw,460px);
-  padding:11px 14px;
-  border:1px solid var(--border);
-  border-radius:11px;
-  background:rgba(14,18,28,.96);
-  color:var(--text);
   font-size:12px;
-  box-shadow:0 16px 50px rgba(0,0,0,.4);
-  transition:.22s ease;
-  text-align:center;
+  color:#aeb3c0;
+  margin:0 0 7px;
+  font-weight:650;
 }
-.toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
+input,textarea,select{
+  width:100%;
+  border:1px solid var(--line);
+  background:#0c0e13;
+  color:var(--text);
+  border-radius:10px;
+  outline:none;
+  padding:11px 12px;
+  transition:.16s;
 }
-.ripple{
-  position:absolute;
-  width:20px;
-  height:20px;
-  border-radius:50%;
-  background:rgba(255,255,255,.28);
-  transform:translate(-50%,-50%) scale(0);
-  pointer-events:none;
-  animation:ripple .48s ease-out forwards;
+input{height:42px}
+textarea{min-height:104px;resize:vertical}
+input:focus,textarea:focus,select:focus{
+  border-color:color-mix(in srgb,var(--accent) 70%,white 5%);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent);
 }
-.ripple-btn{position:relative;overflow:hidden}
-@keyframes ripple{
-  to{transform:translate(-50%,-50%) scale(12);opacity:0}
+.small{font-size:11px;color:#6f7583;margin-top:5px}
+.colorline{display:flex;gap:8px}
+.colorline input[type=text]{flex:1}
+.colorline input[type=color]{width:48px;padding:4px;height:42px}
+.checkrow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 12px;border:1px solid var(--line);
+  border-radius:11px;background:#0d0f15;margin-bottom:9px;
 }
-.hidden{display:none!important}
-@media(max-width:860px){
-  .main-grid{grid-template-columns:1fr}
+.checkrow b{font-size:13px}
+.checkrow span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+.switch{
+  width:45px;height:25px;border-radius:20px;background:#292d37;
+  padding:3px;border:0;position:relative;flex:none
 }
-@media(max-width:560px){
-  .app{padding:10px}
-  .topbar{top:5px}
-  .row,.row3{grid-template-columns:1fr}
-  .color-presets{grid-template-columns:repeat(3,1fr)}
-  .config-item{align-items:flex-start;flex-direction:column}
-  .config-actions{width:100%}
-  .config-actions button{flex:1}
+.switch i{
+  display:block;width:19px;height:19px;border-radius:50%;background:#fff;
+  transition:.18s
+}
+.switch.on{background:var(--accent)}
+.switch.on i{transform:translateX(20px)}
+.sendbar{display:flex;gap:9px;margin-top:16px}
+.send{
+  flex:1;height:45px;border:0;border-radius:11px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-weight:800;
+  box-shadow:0 9px 25px color-mix(in srgb,var(--accent) 25%,transparent);
+}
+.clear{
+  width:100px;border:1px solid var(--line);background:#101219;color:#bbb;
+  border-radius:11px
+}
+.send:active,.topbtn:active,.iconbtn:active,.clear:active{transform:scale(.98)}
+.preview{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#0c0e12;
+}
+.banner{
+  height:112px;
+  background:
+    linear-gradient(135deg,color-mix(in srgb,var(--accent) 70%,#161a25),#1c202c);
+  background-size:cover;
+  background-position:center;
+}
+.profile{padding:0 16px 16px;position:relative}
+.avatar{
+  width:76px;height:76px;border-radius:50%;
+  border:5px solid #0c0e12;
+  background:#20242e;
+  object-fit:cover;
+  margin-top:-38px;
+  display:block;
+}
+.pname{font-weight:800;font-size:16px;margin-top:7px}
+.tag{color:#8f95a3;font-size:11px}
+.bio{
+  color:#c4c8d2;
+  font-size:12px;
+  line-height:1.5;
+  margin-top:7px;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.discordmsg{padding:14px 16px;border-top:1px solid var(--line)}
+.msgline{display:flex;gap:9px}
+.msgava{width:35px;height:35px;border-radius:50%;object-fit:cover;background:#222}
+.msgname{font-size:12px;font-weight:750}
+.time{font-size:10px;color:#666d7a;margin-left:5px}
+.msgtext{font-size:13px;color:#ddd;margin-top:4px;white-space:pre-wrap;word-break:break-word}
+.embed{
+  margin-top:10px;
+  border-left:4px solid var(--embed,#5865f2);
+  background:#171920;
+  border-radius:5px;
+  padding:11px;
+}
+.embedtitle{font-size:13px;font-weight:800}
+.embeddesc{font-size:12px;color:#c4c7cf;margin-top:6px;white-space:pre-wrap}
+.thumb{
+  float:right;width:64px;height:64px;border-radius:5px;object-fit:cover;margin:0 0 6px 10px;
+  background:#252936
+}
+.footer{font-size:10px;color:#777e8c;margin-top:9px;clear:both}
+.modalbg{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);
+  backdrop-filter:blur(8px);z-index:50;
+  display:none;align-items:center;justify-content:center;padding:14px
+}
+.modalbg.show{display:flex}
+.modal{
+  width:min(700px,100%);
+  max-height:90vh;overflow:auto;
+  background:#11131a;border:1px solid var(--line);
+  border-radius:17px;box-shadow:0 25px 80px #000;
+}
+.mhead{
+  padding:17px 19px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;background:#11131a;z-index:2
+}
+.mhead h3{margin:0;font-size:15px}
+.mbody{padding:18px}
+.mfoot{
+  padding:13px 18px;border-top:1px solid var(--line);
+  display:flex;justify-content:flex-end;gap:8px
+}
+.primary,.secondary,.dangerbtn{
+  border:0;border-radius:9px;height:39px;padding:0 14px;font-weight:750
+}
+.primary{background:var(--accent);color:#fff}
+.secondary{background:#20232c;color:#ddd;border:1px solid var(--line)}
+.dangerbtn{background:#3a1518;color:#ff9da0;border:1px solid #612024}
+.search{margin-bottom:12px}
+.configitem{
+  border:1px solid var(--line);background:#0d0f14;
+  padding:12px;border-radius:11px;margin-bottom:8px
+}
+.configtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.configname{font-size:13px;font-weight:750;word-break:break-word}
+.configactions{display:flex;gap:5px;flex:none}
+.mini{
+  border:1px solid var(--line);background:#171a21;color:#bbb;
+  border-radius:7px;padding:6px 8px;font-size:10px
+}
+.mini.edit{color:#dfe3ff}
+.mini.del{color:#ff8d92}
+.empty{text-align:center;color:#666d79;padding:28px 10px;font-size:12px}
+.toast{
+  position:fixed;bottom:18px;left:50%;transform:translate(-50%,20px);
+  background:#171a22;border:1px solid var(--line);
+  color:#eee;padding:10px 14px;border-radius:10px;
+  opacity:0;pointer-events:none;transition:.2s;z-index:100;font-size:12px
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.status{font-size:11px;color:#7f8796;margin-top:10px;min-height:16px}
+.rangebox{display:flex;gap:8px}
+.rangebox input{min-width:0}
+@media(max-width:820px){
+  .grid{grid-template-columns:1fr}
+  .previewcard{order:-1}
+}
+@media(max-width:520px){
+  .wrap{width:calc(100% - 14px);margin-top:12px}
+  .row{grid-template-columns:1fr}
+  .top{padding:0 10px}
+  .brand span{display:none}
+  .topbtn{padding:0 9px}
+  .cardhead,.body{padding-left:14px;padding-right:14px}
 }
 </style>
 </head>
 <body>
-<div class="app">
 
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">W</div>
-      <div>
-        <h1>Webhook Sender</h1>
-        <span>Premium webhook dashboard</span>
+<header class="top">
+  <div class="brand">
+    <div class="logo">W</div>
+    <span>Webhook Sender</span>
+  </div>
+  <div class="actions">
+    <button class="topbtn" id="configBtn">CONFIG</button>
+    <button class="topbtn" id="autoBtn">AUTO SEND</button>
+    <button class="iconbtn" id="settingsBtn">⚙</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+
+    <section class="card">
+      <div class="cardhead">
+        <h2>Webhook</h2>
+        <span>Message setup</span>
       </div>
-    </div>
-
-    <div class="top-actions">
-      <button class="iconbtn ripple-btn" id="configBtn" title="Configs">☷</button>
-      <button class="iconbtn ripple-btn" id="automationBtn" title="Automation">⟳</button>
-      <button class="iconbtn ripple-btn" id="settingsBtn" title="Settings">⚙</button>
-    </div>
-  </header>
-
-  <div class="main-grid">
-
-    <main class="card">
-
-      <section class="section">
-        <div class="section-title">
-          <h2>Webhook</h2>
-        </div>
+      <div class="body">
 
         <div class="field">
-          <label class="label">Webhook URL</label>
+          <label>Webhook URL</label>
           <input id="webhook" type="url" placeholder="https://discord.com/api/webhooks/...">
         </div>
 
         <div class="row">
           <div class="field">
-            <label class="label">Username</label>
-            <input id="username" type="text" placeholder="Webhook">
+            <label>Username</label>
+            <input id="username" placeholder="Webhook">
           </div>
-
           <div class="field">
-            <label class="label">Avatar URL</label>
-            <input id="avatar" type="url" placeholder="https://...">
+            <label>Avatar URL</label>
+            <input id="avatar" placeholder="https://...png">
           </div>
         </div>
 
         <div class="field">
-          <label class="label">Banner URL</label>
-          <input id="banner" type="url" placeholder="https://...">
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-title">
-          <h2>Embed</h2>
+          <label>Banner URL</label>
+          <input id="banner" placeholder="https://...png">
+          <div class="small">Preview profile only.</div>
         </div>
 
         <div class="field">
-          <label class="label">Embed Title</label>
-          <input id="title" type="text" placeholder="Title">
+          <label>Profile Description</label>
+          <textarea id="profileDesc" placeholder="Description yang tampil di profile preview..."></textarea>
+          <div class="small">Ini description PP, bukan message.</div>
         </div>
 
         <div class="field">
-          <label class="label">Description / Message</label>
-          <textarea id="message" placeholder="Type your message..."></textarea>
+          <label>Thumbnail URL</label>
+          <input id="thumbnail" placeholder="https://...png">
         </div>
 
         <div class="row">
           <div class="field">
-            <label class="label">Thumbnail URL</label>
-            <input id="thumbnail" type="url" placeholder="https://...">
+            <label>Embed Title</label>
+            <input id="title" placeholder="Title">
           </div>
-
           <div class="field">
-            <label class="label">Footer</label>
-            <input id="footer" type="text" placeholder="Footer">
+            <label>Embed Color</label>
+            <div class="colorline">
+              <input id="color" type="text" value="#5865F2">
+              <input id="colorPicker" type="color" value="#5865F2">
+            </div>
           </div>
         </div>
 
         <div class="field">
-          <label class="label">Embed Color</label>
-          <div class="color-wrap">
-            <input id="color" type="color" value="#5865F2">
-            <input id="colorText" type="text" value="#5865F2" maxlength="7">
+          <label>Message / Embed Description</label>
+          <textarea id="message" placeholder="Tulis message di sini..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Footer</label>
+          <input id="footer" placeholder="Footer text">
+        </div>
+
+        <div class="checkrow">
+          <div><b>Timestamp</b><span>Tambah waktu pada embed</span></div>
+          <button class="switch" id="timestamp"><i></i></button>
+        </div>
+
+        <div class="checkrow">
+          <div><b>Plain Message</b><span>Kirim message tanpa embed</span></div>
+          <button class="switch" id="plain"><i></i></button>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Message Count</label>
+            <input id="repeat" type="number" min="1" max="20" value="1">
+            <div class="small">Maksimal 20 per proses.</div>
+          </div>
+          <div class="field">
+            <label>Delay (seconds)</label>
+            <input id="delay" type="number" min="0" max="3800" value="1">
+            <div class="small">0 – 3800 seconds.</div>
           </div>
         </div>
 
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <strong>Timestamp</strong>
-            <small>Add Discord timestamp to embed</small>
-          </div>
-          <label class="switch">
-            <input id="timestamp" type="checkbox">
-            <span class="slider"></span>
-          </label>
+        <div class="sendbar">
+          <button class="send" id="sendBtn">SEND MESSAGE</button>
+          <button class="clear" id="clearBtn">CLEAR</button>
         </div>
-
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <strong>Plain Message</strong>
-            <small>Send message without an embed</small>
-          </div>
-          <label class="switch">
-            <input id="plain" type="checkbox">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-title">
-          <h2>Send</h2>
-        </div>
-
-        <div class="actions">
-          <button class="btn primary ripple-btn" id="sendBtn">SEND WEBHOOK</button>
-          <button class="btn ripple-btn" id="clearBtn">CLEAR</button>
-        </div>
-
         <div class="status" id="status"></div>
-      </section>
+      </div>
+    </section>
 
-    </main>
-
-    <aside class="card">
-      <div class="preview-wrap">
-        <h2 class="preview-title">Live Preview</h2>
-
-        <div class="discord-preview">
-
-          <div class="profile-banner" id="profileBanner">
-            <img id="bannerImg" alt="">
+    <section class="card previewcard">
+      <div class="cardhead">
+        <h2>Preview</h2>
+        <span>Live</span>
+      </div>
+      <div class="body">
+        <div class="preview">
+          <div class="banner" id="pvBanner"></div>
+          <div class="profile">
+            <img class="avatar" id="pvAvatar" src="" alt="">
+            <div class="pname" id="pvName">Webhook</div>
+            <div class="tag">APP • WEBHOOK</div>
+            <div class="bio" id="pvBio">Profile description</div>
           </div>
 
-          <div class="profile-body">
-            <div class="avatar-box">
-              <img id="avatarImg" alt="" class="hidden">
-              <div id="avatarFallback" class="avatar-fallback">W</div>
+          <div class="discordmsg">
+            <div class="msgline">
+              <img class="msgava" id="pvMsgAvatar" src="" alt="">
+              <div style="min-width:0;flex:1">
+                <div>
+                  <span class="msgname" id="pvMsgName">Webhook</span>
+                  <span class="time">Today</span>
+                </div>
+                <div class="msgtext" id="pvMessage">Your message will appear here.</div>
+
+                <div class="embed" id="pvEmbed">
+                  <img class="thumb" id="pvThumb" src="" alt="">
+                  <div class="embedtitle" id="pvTitle">Embed Title</div>
+                  <div class="embeddesc" id="pvDesc">Embed description</div>
+                  <div class="footer" id="pvFooter">Footer</div>
+                </div>
+              </div>
             </div>
-
-            <div class="preview-name" id="previewName">Webhook</div>
-            <div class="preview-handle">@webhook</div>
-
-            <div id="embedPreview" class="embed-card">
-              <img id="thumbImg" class="embed-thumb" alt="">
-              <div class="embed-title" id="previewTitle">Embed Title</div>
-              <div class="embed-desc" id="previewMessage">Your message will appear here.</div>
-              <div class="embed-footer" id="previewFooter">Footer</div>
-            </div>
-
-            <div id="plainPreview" class="plain-preview hidden"></div>
           </div>
-
         </div>
       </div>
-    </aside>
+    </section>
 
   </div>
-</div>
+</main>
 
-<!-- CONFIG LIST -->
-<div class="modal-backdrop" id="configModal">
+<!-- CONFIG -->
+<div class="modalbg" id="configModal">
   <div class="modal">
-    <div class="modal-head">
-      <h3>CONFIGS</h3>
-      <button class="iconbtn ripple-btn closeModal" data-close="configModal">×</button>
+    <div class="mhead">
+      <h3>CONFIG</h3>
+      <button class="iconbtn" data-close="configModal">×</button>
     </div>
-
-    <div class="modal-body">
-      <div class="config-top">
-        <input id="configSearch" type="text" placeholder="Search configs...">
-        <button class="btn primary ripple-btn" id="newConfigBtn">NEW</button>
-      </div>
-
-      <div class="config-list" id="configList"></div>
+    <div class="mbody">
+      <input class="search" id="configSearch" placeholder="Search config...">
+      <div id="configList"></div>
+    </div>
+    <div class="mfoot">
+      <button class="primary" id="newConfig">NEW CONFIG</button>
     </div>
   </div>
 </div>
 
 <!-- CONFIG EDITOR -->
-<div class="modal-backdrop" id="configEditorModal">
+<div class="modalbg" id="editorModal">
   <div class="modal">
-
-    <div class="modal-head">
+    <div class="mhead">
       <h3 id="editorTitle">NEW CONFIG</h3>
-      <button class="iconbtn ripple-btn closeModal" data-close="configEditorModal">×</button>
+      <button class="iconbtn" id="editorX">×</button>
     </div>
-
-    <div class="modal-body">
+    <div class="mbody">
 
       <div class="field">
-        <label class="label">Config Name</label>
-        <input id="configName" type="text" placeholder="My Config">
+        <label>Config Name</label>
+        <input id="configName" placeholder="My Config">
       </div>
 
       <div class="field">
-        <label class="label">Webhook URL</label>
-        <input id="cfgWebhook" type="url">
+        <label>Webhook URL</label>
+        <input id="cWebhook">
       </div>
 
       <div class="row">
-        <div class="field">
-          <label class="label">Username</label>
-          <input id="cfgUsername" type="text">
-        </div>
-        <div class="field">
-          <label class="label">Avatar URL</label>
-          <input id="cfgAvatar" type="url">
-        </div>
+        <div class="field"><label>Username</label><input id="cUsername"></div>
+        <div class="field"><label>Avatar URL</label><input id="cAvatar"></div>
       </div>
 
-      <div class="field">
-        <label class="label">Banner URL</label>
-        <input id="cfgBanner" type="url">
-      </div>
-
-      <div class="field">
-        <label class="label">Embed Title</label>
-        <input id="cfgTitle" type="text">
-      </div>
-
-      <div class="field">
-        <label class="label">Description / Message</label>
-        <textarea id="cfgMessage"></textarea>
-      </div>
+      <div class="field"><label>Banner URL</label><input id="cBanner"></div>
+      <div class="field"><label>Profile Description</label><textarea id="cProfileDesc"></textarea></div>
+      <div class="field"><label>Thumbnail URL</label><input id="cThumbnail"></div>
 
       <div class="row">
-        <div class="field">
-          <label class="label">Thumbnail URL</label>
-          <input id="cfgThumbnail" type="url">
-        </div>
-        <div class="field">
-          <label class="label">Footer</label>
-          <input id="cfgFooter" type="text">
-        </div>
+        <div class="field"><label>Embed Title</label><input id="cTitle"></div>
+        <div class="field"><label>Embed Color</label><input id="cColor" value="#5865F2"></div>
       </div>
 
-      <div class="field">
-        <label class="label">Embed Color</label>
-        <div class="color-wrap">
-          <input id="cfgColor" type="color" value="#5865F2">
-          <input id="cfgColorText" type="text" value="#5865F2" maxlength="7">
-        </div>
-      </div>
-
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <strong>Timestamp</strong>
-        </div>
-        <label class="switch">
-          <input id="cfgTimestamp" type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <strong>Plain Message</strong>
-        </div>
-        <label class="switch">
-          <input id="cfgPlain" type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
+      <div class="field"><label>Message</label><textarea id="cMessage"></textarea></div>
+      <div class="field"><label>Footer</label><input id="cFooter"></div>
 
       <div class="row">
-        <div class="field">
-          <label class="label">Repeat</label>
-          <input id="cfgRepeat" type="number" min="1" max="20" value="1">
-        </div>
+        <div class="field"><label>Message Count</label><input id="cRepeat" type="number" min="1" max="20"></div>
+        <div class="field"><label>Delay</label><input id="cDelay" type="number" min="0" max="3800"></div>
+      </div>
 
-        <div class="field">
-          <label class="label">Delay (seconds)</label>
-          <input id="cfgDelay" type="number" min="1" max="3600" value="1">
-        </div>
+      <div class="checkrow">
+        <div><b>Timestamp</b></div>
+        <button class="switch" id="cTimestamp"><i></i></button>
+      </div>
+
+      <div class="checkrow">
+        <div><b>Plain Message</b></div>
+        <button class="switch" id="cPlain"><i></i></button>
       </div>
 
     </div>
-
-    <div class="modal-foot">
-      <button class="btn ripple-btn" id="editorCancel">CANCEL</button>
-      <button class="btn primary ripple-btn" id="editorSave">SAVE</button>
+    <div class="mfoot">
+      <button class="secondary" id="editorCancel">CANCEL</button>
+      <button class="primary" id="editorSave">SAVE</button>
     </div>
   </div>
 </div>
 
-<!-- AUTOMATION -->
-<div class="modal-backdrop" id="automationModal">
+<!-- AUTO -->
+<div class="modalbg" id="autoModal">
   <div class="modal">
-
-    <div class="modal-head">
+    <div class="mhead">
       <h3>AUTOMATION SENDER</h3>
-      <button class="iconbtn ripple-btn closeModal" data-close="automationModal">×</button>
+      <button class="iconbtn" data-close="autoModal">×</button>
     </div>
+    <div class="mbody">
 
-    <div class="modal-body">
-
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <strong>Automation</strong>
-          <small id="automationStatus">OFF</small>
+      <div class="checkrow">
+        <div>
+          <b>Auto Send</b>
+          <span>Loop menggunakan message & delay sekarang</span>
         </div>
-
-        <label class="switch">
-          <input id="automationToggle" type="checkbox">
-          <span class="slider"></span>
-        </label>
+        <button class="switch" id="autoSwitch"><i></i></button>
       </div>
 
       <div class="row">
         <div class="field">
-          <label class="label">Repeat</label>
+          <label>Messages per run</label>
           <input id="autoRepeat" type="number" min="1" max="20" value="1">
         </div>
-
         <div class="field">
-          <label class="label">Delay (seconds)</label>
-          <input id="autoDelay" type="number" min="1" max="3600" value="1">
+          <label>Delay (seconds)</label>
+          <input id="autoDelay" type="number" min="0" max="3800" value="1">
         </div>
       </div>
 
-      <div class="status" id="automationProgress">
-        Automation is OFF
+      <div class="small">
+        Auto Send tetap menghormati response rate-limit Discord.
       </div>
-
+      <div class="status" id="autoStatus"></div>
     </div>
   </div>
 </div>
 
 <!-- SETTINGS -->
-<div class="modal-backdrop" id="settingsModal">
+<div class="modalbg" id="settingsModal">
   <div class="modal">
-
-    <div class="modal-head">
-      <h3>UI SETTINGS</h3>
-      <button class="iconbtn ripple-btn closeModal" data-close="settingsModal">×</button>
+    <div class="mhead">
+      <h3>SETTINGS</h3>
+      <button class="iconbtn" data-close="settingsModal">×</button>
     </div>
+    <div class="mbody">
 
-    <div class="modal-body">
-
-      <div class="setting-row">
-        <div>
-          <strong>Accent Color</strong>
-          <small>Change the main UI color</small>
-        </div>
+      <label>Accent Color</label>
+      <div class="row">
+        <button class="secondary accentPick" data-color="#5865F2">Discord</button>
+        <button class="secondary accentPick" data-color="#00c2ff">Cyan</button>
+      </div>
+      <br>
+      <div class="row">
+        <button class="secondary accentPick" data-color="#8b5cf6">Purple</button>
+        <button class="secondary accentPick" data-color="#22c55e">Green</button>
       </div>
 
-      <div class="color-presets" id="colorPresets">
-        <button class="color-preset" data-color="#5865F2" style="background:#5865F2"></button>
-        <button class="color-preset" data-color="#00A8FC" style="background:#00A8FC"></button>
-        <button class="color-preset" data-color="#00D4A8" style="background:#00D4A8"></button>
-        <button class="color-preset" data-color="#8B5CF6" style="background:#8B5CF6"></button>
-        <button class="color-preset" data-color="#EC4899" style="background:#EC4899"></button>
-        <button class="color-preset" data-color="#FF7A00" style="background:#FF7A00"></button>
-      </div>
+      <br>
 
-      <div style="height:15px"></div>
-
-      <div class="setting-row">
+      <div class="checkrow">
         <div>
-          <strong>Custom Accent</strong>
-          <small>Pick any UI color</small>
+          <b>Gradient UI</b>
+          <span>Static gradient, tidak bergerak</span>
         </div>
-        <input id="uiColor" type="color" value="#5865F2">
-      </div>
-
-      <div class="setting-row">
-        <div>
-          <strong>Gradient UI</strong>
-          <small>Static premium gradient background</small>
-        </div>
-
-        <label class="switch">
-          <input id="gradientToggle" type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
+        <button class="switch on" id="gradientSwitch"><i></i></button>
       </div>
 
     </div>
@@ -931,644 +558,619 @@ input[type=color]{
 <script>
 const $=id=>document.getElementById(id);
 
-const KEY_CONFIGS="webhook_sender_configs_v4";
-const KEY_UI="webhook_sender_ui_v4";
+const STORAGE={
+  configs:"ws_configs_v4",
+  settings:"ws_settings_v4"
+};
 
-let configs=JSON.parse(localStorage.getItem(KEY_CONFIGS)||"[]");
-let uiSettings=JSON.parse(localStorage.getItem(KEY_UI)||'{"accent":"#5865F2","gradient":true}');
-let editingConfigId=null;
-let automationTimer=null;
-let automationRunning=false;
+let configs=JSON.parse(localStorage.getItem(STORAGE.configs)||"[]");
+let editingId=null;
+let autoRunning=false;
+let autoTimer=null;
+
+let settings=Object.assign({
+  accent:"#5865F2",
+  gradient:true
+},JSON.parse(localStorage.getItem(STORAGE.settings)||"{}"));
+
+document.documentElement.style.setProperty("--accent",settings.accent);
+document.documentElement.style.setProperty("--accent2",lighten(settings.accent));
 
 function saveConfigs(){
-  localStorage.setItem(KEY_CONFIGS,JSON.stringify(configs));
+  localStorage.setItem(STORAGE.configs,JSON.stringify(configs));
 }
 
-function saveUI(){
-  localStorage.setItem(KEY_UI,JSON.stringify(uiSettings));
+function saveSettings(){
+  localStorage.setItem(STORAGE.settings,JSON.stringify(settings));
 }
 
-function clamp(n,min,max){
-  n=Number(n)||min;
-  return Math.max(min,Math.min(max,n));
+function toast(t){
+  $("toast").textContent=t;
+  $("toast").classList.add("show");
+  clearTimeout(window.__toast);
+  window.__toast=setTimeout(()=>$("toast").classList.remove("show"),2200);
 }
 
-function normalizeHex(v){
-  v=String(v||"").trim();
-  if(!/^#[0-9a-fA-F]{6}$/.test(v))return "#5865F2";
-  return v.toUpperCase();
+function clamp(v,min,max){
+  v=Number(v);
+  if(!Number.isFinite(v))return min;
+  return Math.max(min,Math.min(max,v));
 }
 
-function applyUI(){
-  const accent=normalizeHex(uiSettings.accent);
-  document.documentElement.style.setProperty("--accent",accent);
-
-  const second=adjustColor(accent,35);
-  document.documentElement.style.setProperty("--accent2",second);
-
-  document.body.classList.toggle("no-gradient",!uiSettings.gradient);
-
-  $("uiColor").value=accent;
-  $("gradientToggle").checked=!!uiSettings.gradient;
-
-  document.querySelectorAll(".color-preset").forEach(btn=>{
-    btn.classList.toggle(
-      "active",
-      btn.dataset.color.toUpperCase()===accent.toUpperCase()
-    );
-  });
-}
-
-function adjustColor(hex,amount){
-  const num=parseInt(hex.slice(1),16);
-  let r=(num>>16)+amount;
-  let g=((num>>8)&255)+amount;
-  let b=(num&255)+amount;
-  r=Math.max(0,Math.min(255,r));
-  g=Math.max(0,Math.min(255,g));
-  b=Math.max(0,Math.min(255,b));
-  return "#"+[r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
-}
-
-function toast(msg){
-  const t=$("toast");
-  t.textContent=msg;
-  t.classList.add("show");
-  clearTimeout(t._timer);
-  t._timer=setTimeout(()=>t.classList.remove("show"),2200);
-}
-
-function openModal(id){
-  $(id).style.display="flex";
-}
-
-function closeModal(id){
-  $(id).style.display="none";
-}
-
-document.querySelectorAll(".closeModal").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    closeModal(btn.dataset.close);
-  });
-});
-
-document.querySelectorAll(".modal-backdrop").forEach(backdrop=>{
-  backdrop.addEventListener("click",e=>{
-    if(e.target===backdrop)closeModal(backdrop.id);
-  });
-});
-
-function addRipple(e){
-  const btn=e.currentTarget;
-  const rect=btn.getBoundingClientRect();
-  const ripple=document.createElement("span");
-  ripple.className="ripple";
-  ripple.style.left=(e.clientX-rect.left)+"px";
-  ripple.style.top=(e.clientY-rect.top)+"px";
-  btn.appendChild(ripple);
-  setTimeout(()=>ripple.remove(),500);
-}
-
-document.querySelectorAll(".ripple-btn").forEach(btn=>{
-  btn.addEventListener("click",addRipple);
-});
-
-function getMainSettings(){
+function getMain(){
   return {
-    webhook:$("webhook").value,
-    username:$("username").value,
-    avatar:$("avatar").value,
-    banner:$("banner").value,
+    webhook:$("webhook").value.trim(),
+    username:$("username").value.trim(),
+    avatar:$("avatar").value.trim(),
+    banner:$("banner").value.trim(),
+    profileDesc:$("profileDesc").value,
+    thumbnail:$("thumbnail").value.trim(),
     title:$("title").value,
+    color:$("color").value.trim()||"#5865F2",
     message:$("message").value,
-    thumbnail:$("thumbnail").value,
-    color:normalizeHex($("color").value),
     footer:$("footer").value,
-    timestamp:$("timestamp").checked,
-    plain:$("plain").checked,
-    repeat:clamp($("autoRepeat").value||$("repeatFallback")?.value||1,1,20),
-    delay:clamp($("autoDelay").value||1,1,3600)
+    timestamp:$("timestamp").classList.contains("on"),
+    plain:$("plain").classList.contains("on"),
+    repeat:clamp($("repeat").value,1,20),
+    delay:clamp($("delay").value,0,3800)
   };
 }
 
-function loadMainSettings(s){
+function setMain(s){
+  s=s||{};
   $("webhook").value=s.webhook||"";
   $("username").value=s.username||"";
   $("avatar").value=s.avatar||"";
   $("banner").value=s.banner||"";
-  $("title").value=s.title||"";
-  $("message").value=s.message||"";
+  $("profileDesc").value=s.profileDesc||"";
   $("thumbnail").value=s.thumbnail||"";
-  $("color").value=normalizeHex(s.color||"#5865F2");
-  $("colorText").value=normalizeHex(s.color||"#5865F2");
+  $("title").value=s.title||"";
+  $("color").value=s.color||"#5865F2";
+  $("colorPicker").value=validColor(s.color)?s.color:"#5865F2";
+  $("message").value=s.message||"";
   $("footer").value=s.footer||"";
-  $("timestamp").checked=!!s.timestamp;
-  $("plain").checked=!!s.plain;
-
-  $("autoRepeat").value=clamp(s.repeat||1,1,20);
-  $("autoDelay").value=clamp(s.delay||1,1,3600);
-
+  $("repeat").value=clamp(s.repeat||1,1,20);
+  $("delay").value=clamp(s.delay??1,0,3800);
+  setSwitch("timestamp",!!s.timestamp);
+  setSwitch("plain",!!s.plain);
   updatePreview();
 }
 
-function getEditorSettings(){
-  return {
-    webhook:$("cfgWebhook").value,
-    username:$("cfgUsername").value,
-    avatar:$("cfgAvatar").value,
-    banner:$("cfgBanner").value,
-    title:$("cfgTitle").value,
-    message:$("cfgMessage").value,
-    thumbnail:$("cfgThumbnail").value,
-    color:normalizeHex($("cfgColor").value),
-    footer:$("cfgFooter").value,
-    timestamp:$("cfgTimestamp").checked,
-    plain:$("cfgPlain").checked,
-    repeat:clamp($("cfgRepeat").value,1,20),
-    delay:clamp($("cfgDelay").value,1,3600)
-  };
+function validColor(x){
+  return /^#[0-9a-f]{6}$/i.test(x||"");
 }
 
-function fillEditor(s={}){
-  $("configName").value=s.name||"";
-  $("cfgWebhook").value=s.webhook||"";
-  $("cfgUsername").value=s.username||"";
-  $("cfgAvatar").value=s.avatar||"";
-  $("cfgBanner").value=s.banner||"";
-  $("cfgTitle").value=s.title||"";
-  $("cfgMessage").value=s.message||"";
-  $("cfgThumbnail").value=s.thumbnail||"";
-  $("cfgColor").value=normalizeHex(s.color||"#5865F2");
-  $("cfgColorText").value=normalizeHex(s.color||"#5865F2");
-  $("cfgFooter").value=s.footer||"";
-  $("cfgTimestamp").checked=!!s.timestamp;
-  $("cfgPlain").checked=!!s.plain;
-  $("cfgRepeat").value=clamp(s.repeat||1,1,20);
-  $("cfgDelay").value=clamp(s.delay||1,1,3600);
+function lighten(hex){
+  if(!validColor(hex))return "#7289DA";
+  let n=parseInt(hex.slice(1),16);
+  let r=Math.min(255,(n>>16)+35);
+  let g=Math.min(255,((n>>8)&255)+35);
+  let b=Math.min(255,(n&255)+35);
+  return "#"+[r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
 }
 
-function createConfigData(){
-  return {
-    id:crypto.randomUUID(),
-    name:"",
-    webhook:"",
-    username:"",
-    avatar:"",
-    banner:"",
-    title:"",
-    message:"",
-    thumbnail:"",
-    color:"#5865F2",
-    footer:"",
-    timestamp:false,
-    plain:false,
-    repeat:1,
-    delay:1
-  };
+function setSwitch(id,on){
+  $(id).classList.toggle("on",!!on);
 }
 
-function renderConfigs(){
-  const list=$("configList");
-  const search=$("configSearch").value.trim().toLowerCase();
-  list.innerHTML="";
+function updatePreview(){
+  const s=getMain();
+  $("pvName").textContent=s.username||"Webhook";
+  $("pvMsgName").textContent=s.username||"Webhook";
+  $("pvBio").textContent=s.profileDesc||"Profile description";
+  $("pvMessage").textContent=s.message||"Your message will appear here.";
 
-  const filtered=configs.filter(c=>
-    String(c.name||"").toLowerCase().includes(search)
-  );
+  $("pvTitle").textContent=s.title||"Embed Title";
+  $("pvDesc").textContent=s.message||"Embed description";
+  $("pvFooter").textContent=s.footer||"Footer";
 
-  if(!filtered.length){
-    list.innerHTML='<div class="empty-preview">No saved configs.</div>';
-    return;
+  $("pvEmbed").style.setProperty("--embed",validColor(s.color)?s.color:"#5865F2");
+
+  if(s.thumbnail){
+    $("pvThumb").src=s.thumbnail;
+    $("pvThumb").style.display="block";
+  }else{
+    $("pvThumb").style.display="none";
   }
 
-  filtered.forEach(c=>{
-    const item=document.createElement("div");
-    item.className="config-item";
+  if(s.avatar){
+    $("pvAvatar").src=s.avatar;
+    $("pvMsgAvatar").src=s.avatar;
+  }else{
+    $("pvAvatar").removeAttribute("src");
+    $("pvMsgAvatar").removeAttribute("src");
+  }
 
-    const name=document.createElement("div");
-    name.className="config-name";
-    name.textContent=c.name||"Unnamed Config";
+  if(s.banner){
+    $("pvBanner").style.backgroundImage=`url("${cssUrl(s.banner)}")`;
+  }else{
+    $("pvBanner").style.backgroundImage="";
+  }
 
-    const actions=document.createElement("div");
-    actions.className="config-actions";
+  $("pvEmbed").style.display=s.plain?"none":"block";
+}
 
-    const load=document.createElement("button");
-    load.textContent="LOAD";
-    load.onclick=()=>{
-      loadMainSettings(c);
-      closeModal("configModal");
-      toast("Config loaded: "+(c.name||"Unnamed Config"));
-    };
+function cssUrl(url){
+  return url.replace(/["\\\n\r]/g,"");
+}
 
-    const edit=document.createElement("button");
-    edit.textContent="EDIT";
-    edit.onclick=()=>{
-      editingConfigId=c.id;
-      $("editorTitle").textContent="EDIT CONFIG";
-      fillEditor(c);
-      closeModal("configModal");
-      openModal("configEditorModal");
-    };
+document.querySelectorAll("input,textarea").forEach(el=>{
+  el.addEventListener("input",updatePreview);
+});
 
-    const del=document.createElement("button");
-    del.textContent="DELETE";
-    del.className="delete";
-    del.onclick=()=>{
-      if(confirm("Delete this config?")){
-        configs=configs.filter(x=>x.id!==c.id);
-        saveConfigs();
-        renderConfigs();
-        toast("Config deleted.");
-      }
-    };
+$("color").addEventListener("input",()=>{
+  if(validColor($("color").value))$("colorPicker").value=$("color").value;
+});
+$("colorPicker").addEventListener("input",()=>{
+  $("color").value=$("colorPicker").value.toUpperCase();
+  updatePreview();
+});
 
-    actions.append(load,edit,del);
-    item.append(name,actions);
-    list.appendChild(item);
+document.querySelectorAll(".switch").forEach(sw=>{
+  sw.addEventListener("click",()=>{
+    sw.classList.toggle("on");
+    if(sw.id==="autoSwitch")toggleAuto();
+    updatePreview();
   });
-}
+});
 
-function openNewConfig(){
-  editingConfigId=null;
-  $("editorTitle").textContent="NEW CONFIG";
-  fillEditor(createConfigData());
-  openModal("configEditorModal");
-}
+document.querySelectorAll("[data-close]").forEach(b=>{
+  b.onclick=()=>$(b.dataset.close).classList.remove("show");
+});
 
 $("configBtn").onclick=()=>{
   renderConfigs();
-  openModal("configModal");
+  $("configModal").classList.add("show");
 };
 
-$("newConfigBtn").onclick=()=>{
-  openNewConfig();
+$("settingsBtn").onclick=()=>{
+  $("settingsModal").classList.add("show");
 };
 
-$("configSearch").addEventListener("input",renderConfigs);
+$("autoBtn").onclick=()=>{
+  $("autoRepeat").value=$("repeat").value;
+  $("autoDelay").value=$("delay").value;
+  $("autoModal").classList.add("show");
+};
+
+$("newConfig").onclick=()=>{
+  editingId=null;
+  clearEditor();
+  $("editorTitle").textContent="NEW CONFIG";
+  $("editorModal").classList.add("show");
+};
+
+$("editorX").onclick=()=>{
+  if(confirm("Really bro?"))closeEditor();
+};
 
 $("editorCancel").onclick=()=>{
-  if(confirm("Really bro?")){
-    closeModal("configEditorModal");
-    editingConfigId=null;
-  }
+  if(confirm("Really bro?"))closeEditor();
 };
+
+function closeEditor(){
+  editingId=null;
+  $("editorModal").classList.remove("show");
+}
+
+function clearEditor(){
+  [
+    "configName","cWebhook","cUsername","cAvatar","cBanner",
+    "cProfileDesc","cThumbnail","cTitle","cColor","cMessage","cFooter"
+  ].forEach(id=>$(id).value="");
+
+  $("cColor").value="#5865F2";
+  $("cRepeat").value=1;
+  $("cDelay").value=1;
+  setSwitch("cTimestamp",false);
+  setSwitch("cPlain",false);
+}
+
+function mainToEditor(){
+  const s=getMain();
+  $("cWebhook").value=s.webhook;
+  $("cUsername").value=s.username;
+  $("cAvatar").value=s.avatar;
+  $("cBanner").value=s.banner;
+  $("cProfileDesc").value=s.profileDesc;
+  $("cThumbnail").value=s.thumbnail;
+  $("cTitle").value=s.title;
+  $("cColor").value=s.color;
+  $("cMessage").value=s.message;
+  $("cFooter").value=s.footer;
+  $("cRepeat").value=s.repeat;
+  $("cDelay").value=s.delay;
+  setSwitch("cTimestamp",s.timestamp);
+  setSwitch("cPlain",s.plain);
+}
+
+function editorToObject(){
+  return {
+    webhook:$("cWebhook").value.trim(),
+    username:$("cUsername").value.trim(),
+    avatar:$("cAvatar").value.trim(),
+    banner:$("cBanner").value.trim(),
+    profileDesc:$("cProfileDesc").value,
+    thumbnail:$("cThumbnail").value.trim(),
+    title:$("cTitle").value,
+    color:$("cColor").value.trim()||"#5865F2",
+    message:$("cMessage").value,
+    footer:$("cFooter").value,
+    timestamp:$("cTimestamp").classList.contains("on"),
+    plain:$("cPlain").classList.contains("on"),
+    repeat:clamp($("cRepeat").value,1,20),
+    delay:clamp($("cDelay").value,0,3800)
+  };
+}
 
 $("editorSave").onclick=()=>{
   const name=$("configName").value.trim();
 
   if(!name){
-    toast("Config name is required.");
-    $("configName").focus();
+    toast("Config Name required");
     return;
   }
 
-  const settings=getEditorSettings();
+  const data=editorToObject();
 
-  if(editingConfigId){
-    const index=configs.findIndex(c=>c.id===editingConfigId);
+  if(editingId){
+    const index=configs.findIndex(x=>x.id===editingId);
 
     if(index<0){
-      toast("Config not found.");
+      toast("Config tidak ditemukan");
       return;
     }
 
-    const collision=configs.find(c=>
-      c.id!==editingConfigId &&
-      c.name.trim().toLowerCase()===name.toLowerCase()
-    );
+    const duplicate=configs.some(x=>x.id!==editingId && x.name.toLowerCase()===name.toLowerCase());
 
-    if(collision){
-      toast("That config name already exists.");
+    if(duplicate){
+      toast("Nama config sudah dipakai");
       return;
     }
 
     configs[index]={
       ...configs[index],
-      ...settings,
+      ...data,
       name
     };
 
     saveConfigs();
-    closeModal("configEditorModal");
-    renderConfigs();
-    toast("Config updated.");
-    editingConfigId=null;
-    return;
-  }
-
-  const collision=configs.find(c=>
-    c.name.trim().toLowerCase()===name.toLowerCase()
-  );
-
-  if(collision){
-    toast("That config name already exists.");
-    return;
-  }
-
-  configs.push({
-    ...settings,
-    id:crypto.randomUUID(),
-    name
-  });
-
-  saveConfigs();
-  closeModal("configEditorModal");
-  renderConfigs();
-  toast("Config saved.");
-};
-
-function updatePreview(){
-  const name=$("username").value.trim()||"Webhook";
-  const avatar=$("avatar").value.trim();
-  const banner=$("banner").value.trim();
-  const title=$("title").value;
-  const message=$("message").value;
-  const thumbnail=$("thumbnail").value.trim();
-  const footer=$("footer").value;
-  const color=normalizeHex($("color").value);
-  const plain=$("plain").checked;
-
-  $("previewName").textContent=name;
-  $("embedPreview").style.borderLeftColor=color;
-
-  if(avatar){
-    $("avatarImg").src=avatar;
-    $("avatarImg").classList.remove("hidden");
-    $("avatarFallback").classList.add("hidden");
-
-    $("avatarImg").onerror=()=>{
-      $("avatarImg").classList.add("hidden");
-      $("avatarFallback").classList.remove("hidden");
-    };
+    toast("Config updated");
   }else{
-    $("avatarImg").classList.add("hidden");
-    $("avatarFallback").classList.remove("hidden");
-  }
-
-  if(banner){
-    $("bannerImg").src=banner;
-    $("bannerImg").style.display="block";
-
-    $("bannerImg").onerror=()=>{
-      $("bannerImg").style.display="none";
-    };
-  }else{
-    $("bannerImg").style.display="none";
-  }
-
-  if(thumbnail){
-    $("thumbImg").src=thumbnail;
-    $("thumbImg").style.display="block";
-
-    $("thumbImg").onerror=()=>{
-      $("thumbImg").style.display="none";
-    };
-  }else{
-    $("thumbImg").style.display="none";
-  }
-
-  $("previewTitle").textContent=title||"Embed Title";
-  $("previewMessage").textContent=message||"Your message will appear here.";
-  $("previewFooter").textContent=footer||"Footer";
-
-  if(plain){
-    $("embedPreview").classList.add("hidden");
-    $("plainPreview").classList.remove("hidden");
-    $("plainPreview").textContent=message||"Your message will appear here.";
-  }else{
-    $("embedPreview").classList.remove("hidden");
-    $("plainPreview").classList.add("hidden");
-  }
-}
-
-[
-  "webhook","username","avatar","banner","title","message",
-  "thumbnail","footer"
-].forEach(id=>{
-  $(id).addEventListener("input",updatePreview);
-});
-
-$("color").addEventListener("input",()=>{
-  $("colorText").value=$("color").value.toUpperCase();
-  updatePreview();
-});
-
-$("colorText").addEventListener("input",()=>{
-  const v=normalizeHex($("colorText").value);
-
-  if(/^#[0-9A-Fa-f]{6}$/.test($("colorText").value)){
-    $("color").value=v;
-    updatePreview();
-  }
-});
-
-$("plain").addEventListener("change",updatePreview);
-
-$("cfgColor").addEventListener("input",()=>{
-  $("cfgColorText").value=$("cfgColor").value.toUpperCase();
-});
-
-$("cfgColorText").addEventListener("input",()=>{
-  if(/^#[0-9A-Fa-f]{6}$/.test($("cfgColorText").value)){
-    $("cfgColor").value=$("cfgColorText").value;
-  }
-});
-
-$("clearBtn").onclick=()=>{
-  [
-    "webhook","username","avatar","banner","title",
-    "message","thumbnail","footer"
-  ].forEach(id=>$(id).value="");
-
-  $("color").value="#5865F2";
-  $("colorText").value="#5865F2";
-  $("timestamp").checked=false;
-  $("plain").checked=false;
-  $("autoRepeat").value=1;
-  $("autoDelay").value=1;
-
-  updatePreview();
-  $("status").textContent="";
-};
-
-function buildWebhookPayload(){
-  const webhook=$("webhook").value.trim();
-  const username=$("username").value.trim();
-  const avatar=$("avatar").value.trim();
-  const title=$("title").value;
-  const message=$("message").value;
-  const thumbnail=$("thumbnail").value.trim();
-  const footer=$("footer").value;
-  const color=normalizeHex($("color").value);
-  const timestamp=$("timestamp").checked;
-  const plain=$("plain").checked;
-
-  if(!webhook)throw new Error("Webhook URL required.");
-  if(!message&&!title)throw new Error("Message or title required.");
-
-  const payload={
-    username:username||"Webhook"
-  };
-
-  if(avatar)payload.avatar_url=avatar;
-
-  if(plain){
-    payload.content=message;
-    return {webhook,payload};
-  }
-
-  const embed={
-    color:parseInt(color.slice(1),16)
-  };
-
-  if(title)embed.title=title;
-  if(message)embed.description=message;
-  if(thumbnail)embed.thumbnail={url:thumbnail};
-  if(footer)embed.footer={text:footer};
-  if(timestamp)embed.timestamp=new Date().toISOString();
-
-  payload.embeds=[embed];
-
-  return {webhook,payload};
-}
-
-async function sendOnce(){
-  const {webhook,payload}=buildWebhookPayload();
-
-  const res=await fetch(webhook,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify(payload)
-  });
-
-  if(!res.ok){
-    throw new Error("Discord returned HTTP "+res.status);
-  }
-}
-
-$("sendBtn").onclick=async()=>{
-  try{
-    $("status").textContent="Sending...";
-    await sendOnce();
-    $("status").textContent="Webhook sent successfully.";
-    toast("Message sent.");
-  }catch(err){
-    $("status").textContent="Error: "+err.message;
-    toast(err.message);
-  }
-};
-
-$("automationBtn").onclick=()=>{
-  openModal("automationModal");
-};
-
-function stopAutomation(msg="Automation is OFF"){
-  automationRunning=false;
-  clearTimeout(automationTimer);
-  automationTimer=null;
-  $("automationToggle").checked=false;
-  $("automationStatus").textContent="OFF";
-  $("automationProgress").textContent=msg;
-}
-
-async function runAutomation(){
-  if(!automationRunning)return;
-
-  const repeat=clamp($("autoRepeat").value,1,20);
-  const delay=clamp($("autoDelay").value,1,3600);
-
-  $("autoRepeat").value=repeat;
-  $("autoDelay").value=delay;
-
-  for(let i=0;i<repeat;i++){
-    if(!automationRunning)return;
-
-    $("automationProgress").textContent=
-      "Sending "+(i+1)+" of "+repeat+"...";
-
-    try{
-      await sendOnce();
-
-      $("status").textContent=
-        "Automation sent "+(i+1)+" of "+repeat;
-    }catch(err){
-      $("automationProgress").textContent=
-        "Stopped: "+err.message;
-      stopAutomation("Automation stopped because sending failed.");
+    if(configs.some(x=>x.name.toLowerCase()===name.toLowerCase())){
+      toast("Nama config sudah dipakai");
       return;
     }
 
-    if(i<repeat-1){
-      await new Promise(resolve=>{
-        automationTimer=setTimeout(resolve,delay*1000);
-      });
+    configs.push({
+      id:crypto.randomUUID(),
+      name,
+      ...data
+    });
 
-      if(!automationRunning)return;
+    saveConfigs();
+    toast("Config saved");
+  }
+
+  closeEditor();
+  renderConfigs();
+};
+
+function renderConfigs(){
+  const q=$("configSearch").value.toLowerCase().trim();
+  const box=$("configList");
+  box.innerHTML="";
+
+  const list=configs.filter(x=>x.name.toLowerCase().includes(q));
+
+  if(!list.length){
+    box.innerHTML='<div class="empty">No config found.</div>';
+    return;
+  }
+
+  list.forEach(c=>{
+    const el=document.createElement("div");
+    el.className="configitem";
+
+    const top=document.createElement("div");
+    top.className="configtop";
+
+    const name=document.createElement("div");
+    name.className="configname";
+    name.textContent=c.name;
+
+    const actions=document.createElement("div");
+    actions.className="configactions";
+
+    const load=document.createElement("button");
+    load.className="mini";
+    load.textContent="LOAD";
+    load.onclick=()=>{
+      setMain(c);
+      $("configModal").classList.remove("show");
+      toast("Config loaded");
+    };
+
+    const edit=document.createElement("button");
+    edit.className="mini edit";
+    edit.textContent="EDIT";
+    edit.onclick=()=>{
+      editingId=c.id;
+      $("configName").value=c.name;
+      $("cWebhook").value=c.webhook||"";
+      $("cUsername").value=c.username||"";
+      $("cAvatar").value=c.avatar||"";
+      $("cBanner").value=c.banner||"";
+      $("cProfileDesc").value=c.profileDesc||"";
+      $("cThumbnail").value=c.thumbnail||"";
+      $("cTitle").value=c.title||"";
+      $("cColor").value=c.color||"#5865F2";
+      $("cMessage").value=c.message||"";
+      $("cFooter").value=c.footer||"";
+      $("cRepeat").value=clamp(c.repeat||1,1,20);
+      $("cDelay").value=clamp(c.delay??1,0,3800);
+      setSwitch("cTimestamp",!!c.timestamp);
+      setSwitch("cPlain",!!c.plain);
+      $("editorTitle").textContent="EDIT CONFIG";
+      $("editorModal").classList.add("show");
+    };
+
+    const del=document.createElement("button");
+    del.className="mini del";
+    del.textContent="DELETE";
+    del.onclick=()=>{
+      if(!confirm("Delete this config?"))return;
+      configs=configs.filter(x=>x.id!==c.id);
+      saveConfigs();
+      renderConfigs();
+      toast("Config deleted");
+    };
+
+    actions.append(load,edit,del);
+    top.append(name,actions);
+    el.append(top);
+    box.append(el);
+  });
+}
+
+$("configSearch").oninput=renderConfigs;
+
+function validateWebhook(url){
+  return /^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//i.test(url);
+}
+
+function payloadFromSettings(s){
+  const p={
+    username:s.username||undefined,
+    avatar_url:s.avatar||undefined
+  };
+
+  if(s.plain){
+    p.content=s.message||"";
+    return p;
+  }
+
+  p.content="";
+
+  p.embeds=[{
+    title:s.title||undefined,
+    description:s.message||undefined,
+    color:parseInt((s.color||"#5865F2").replace("#",""),16)||5793266,
+    thumbnail:s.thumbnail?{url:s.thumbnail}:undefined,
+    footer:s.footer?{text:s.footer}:undefined,
+    timestamp:s.timestamp?new Date().toISOString():undefined
+  }];
+
+  return p;
+}
+
+async function postWebhook(s){
+  const response=await fetch(s.webhook,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payloadFromSettings(s))
+  });
+
+  if(response.ok)return true;
+
+  if(response.status===429){
+    let wait=2;
+
+    try{
+      const data=await response.json();
+      wait=Number(data.retry_after)||wait;
+    }catch(e){}
+
+    await sleep(Math.max(wait,1)*1000);
+    return postWebhook(s);
+  }
+
+  throw new Error("HTTP "+response.status);
+}
+
+function sleep(ms){
+  return new Promise(r=>setTimeout(r,ms));
+}
+
+async function sendMany(s,count,delay,statusEl){
+  if(!validateWebhook(s.webhook)){
+    throw new Error("Webhook URL tidak valid");
+  }
+
+  count=clamp(count,1,20);
+  delay=clamp(delay,0,3800);
+
+  for(let i=0;i<count;i++){
+    if(statusEl)statusEl.textContent=`Sending ${i+1}/${count}...`;
+
+    await postWebhook(s);
+
+    if(i<count-1 && delay>0){
+      if(statusEl)statusEl.textContent=`Waiting ${delay}s...`;
+      await sleep(delay*1000);
     }
   }
 
-  stopAutomation("Automation finished.");
-  toast("Automation finished.");
+  if(statusEl)statusEl.textContent=`Sent ${count} message${count>1?"s":""}.`;
 }
 
-$("automationToggle").addEventListener("change",()=>{
-  if($("automationToggle").checked){
-    automationRunning=true;
-    $("automationStatus").textContent="ON";
-    $("automationProgress").textContent="Automation started.";
-    runAutomation();
-  }else{
-    stopAutomation("Automation stopped.");
-    toast("Automation OFF");
-  }
-});
+$("sendBtn").onclick=async()=>{
+  const s=getMain();
 
-$("settingsBtn").onclick=()=>{
-  applyUI();
-  openModal("settingsModal");
+  if(!s.webhook){
+    toast("Webhook URL kosong");
+    return;
+  }
+
+  $("sendBtn").disabled=true;
+  $("sendBtn").textContent="SENDING...";
+
+  try{
+    await sendMany(s,s.repeat,s.delay,$("status"));
+    toast("Message sent");
+  }catch(e){
+    $("status").textContent=e.message;
+    toast("Send failed");
+  }finally{
+    $("sendBtn").disabled=false;
+    $("sendBtn").textContent="SEND MESSAGE";
+  }
 };
 
-document.querySelectorAll(".color-preset").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    uiSettings.accent=btn.dataset.color;
-    saveUI();
-    applyUI();
-    toast("UI color changed.");
-  });
-});
+$("clearBtn").onclick=()=>{
+  if(!confirm("Clear current fields?"))return;
+  setMain({});
+  toast("Cleared");
+};
 
-$("uiColor").addEventListener("input",()=>{
-  uiSettings.accent=$("uiColor").value;
-  saveUI();
-  applyUI();
-});
+function toggleAuto(){
+  if($("autoSwitch").classList.contains("on")){
+    startAuto();
+  }else{
+    stopAuto();
+  }
+}
 
-$("gradientToggle").addEventListener("change",()=>{
-  uiSettings.gradient=$("gradientToggle").checked;
-  saveUI();
-  applyUI();
-});
+function startAuto(){
+  if(autoRunning)return;
 
-$("autoRepeat").addEventListener("input",()=>{
+  const webhook=$("webhook").value.trim();
+
+  if(!validateWebhook(webhook)){
+    setSwitch("autoSwitch",false);
+    toast("Webhook URL tidak valid");
+    return;
+  }
+
+  autoRunning=true;
+
+  const count=clamp($("autoRepeat").value,1,20);
+  const delay=clamp($("autoDelay").value,0,3800);
+
+  $("autoStatus").textContent="Auto Send ON";
+
+  autoLoop(count,delay);
+}
+
+function stopAuto(){
+  autoRunning=false;
+  clearTimeout(autoTimer);
+  autoTimer=null;
+  $("autoStatus").textContent="Auto Send OFF";
+}
+
+async function autoLoop(count,delay){
+  if(!autoRunning)return;
+
+  const s=getMain();
+
+  try{
+    await sendMany(s,count,delay,$("autoStatus"));
+  }catch(e){
+    $("autoStatus").textContent="Error: "+e.message;
+    setSwitch("autoSwitch",false);
+    autoRunning=false;
+    return;
+  }
+
+  if(!autoRunning)return;
+
+  $("autoStatus").textContent=`Next run in ${delay}s`;
+
+  if(delay<=0){
+    autoTimer=setTimeout(()=>autoLoop(count,delay),1000);
+  }else{
+    autoTimer=setTimeout(()=>autoLoop(count,delay),delay*1000);
+  }
+}
+
+$("autoRepeat").oninput=()=>{
   $("autoRepeat").value=clamp($("autoRepeat").value,1,20);
+};
+
+$("autoDelay").oninput=()=>{
+  $("autoDelay").value=clamp($("autoDelay").value,0,3800);
+};
+
+document.querySelectorAll(".accentPick").forEach(b=>{
+  b.onclick=()=>{
+    settings.accent=b.dataset.color;
+    document.documentElement.style.setProperty("--accent",settings.accent);
+    document.documentElement.style.setProperty("--accent2",lighten(settings.accent));
+    saveSettings();
+    toast("Accent updated");
+  };
 });
 
-$("autoDelay").addEventListener("input",()=>{
-  $("autoDelay").value=clamp($("autoDelay").value,1,3600);
+$("gradientSwitch").onclick=()=>{
+  settings.gradient=!settings.gradient;
+  setSwitch("gradientSwitch",settings.gradient);
+  saveSettings();
+
+  document.body.style.background=settings.gradient?
+    `radial-gradient(circle at 15% 0%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 32%),radial-gradient(circle at 90% 100%,rgba(40,120,255,.08),transparent 30%),#08090d`
+    :"#08090d";
+};
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");
+  if(!b)return;
+
+  const r=document.createElement("span");
+  r.style.position="absolute";
+  r.style.pointerEvents="none";
+  r.style.width="12px";
+  r.style.height="12px";
+  r.style.borderRadius="50%";
+  r.style.background="rgba(255,255,255,.35)";
+  r.style.transform="translate(-50%,-50%) scale(0)";
+  r.style.transition=".35s";
+
+  const rect=b.getBoundingClientRect();
+  r.style.left=(e.clientX-rect.left)+"px";
+  r.style.top=(e.clientY-rect.top)+"px";
+
+  if(getComputedStyle(b).position==="static")b.style.position="relative";
+  b.style.overflow="hidden";
+  b.appendChild(r);
+
+  requestAnimationFrame(()=>{
+    r.style.transform="translate(-50%,-50%) scale(8)";
+    r.style.opacity="0";
+  });
+
+  setTimeout(()=>r.remove(),400);
 });
 
-$("cfgRepeat").addEventListener("input",()=>{
-  $("cfgRepeat").value=clamp($("cfgRepeat").value,1,20);
-});
+if(settings.gradient){
+  document.body.style.background=
+    `radial-gradient(circle at 15% 0%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 32%),radial-gradient(circle at 90% 100%,rgba(40,120,255,.08),transparent 30%),#08090d`;
+}else{
+  document.body.style.background="#08090d";
+}
 
-$("cfgDelay").addEventListener("input",()=>{
-  $("cfgDelay").value=clamp($("cfgDelay").value,1,3600);
-});
-
-applyUI();
-updatePreview();
+setSwitch("gradientSwitch",settings.gradient);
+setMain({});
 </script>
 </body>
 </html>
